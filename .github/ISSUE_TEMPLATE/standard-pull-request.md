@@ -12,6 +12,7 @@ assignees: ''
 - [ ] The code has been tested & works (i.e. no glaring bugs or hidden breaking changes). *If it does not explain why in description.*
 - [ ] The code passes all applicable unit tests.
 - [ ] Complicated & hard to read parts of the code have comments.
+- [ ] The code has been formatted correctly. *Correct indentation and so on.*
 - [ ] You are making a pull request against the correct branch.
 - [ ] You will provide a detailed description.
 - [ ] You will assign yourself to this Pull Request.
