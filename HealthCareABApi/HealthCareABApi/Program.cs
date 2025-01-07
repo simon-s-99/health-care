@@ -10,8 +10,21 @@ using HealthCareABApi.Repositories.Implementations;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure MongoDB settings
-builder.Services.Configure<MongoDBSettings>(
-    builder.Configuration.GetSection("MongoDBSettings"));
+if (builder.Environment.IsDevelopment())
+{
+    // get from secrets.json
+    builder.Configuration.AddUserSecrets<Program>();
+    builder.Services.Configure<MongoDBSettings>(
+        builder.Configuration.GetSection("MONGODB")
+    );
+}
+else
+{
+    // get from appsettings
+    builder.Services.Configure<MongoDBSettings>(
+        builder.Configuration.GetSection("MongoDBSettings")
+    );
+}
 
 // Register MongoDB context
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
@@ -24,7 +37,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 // Register custom services
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtTokenService>();
-builder.Services.AddScoped<AvailabilityService>();
+//builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
 
 
 
@@ -131,13 +144,13 @@ builder.Services.AddCors(options =>
         // Only requests coming from "https://localhost:7253" will be allowed.
         // You can add more origins here if needed.
         policy.WithOrigins("https://localhost:7253")
-               // Allow any HTTP method (e.g., GET, POST, PUT, DELETE) for cross-origin requests.
+              // Allow any HTTP method (e.g., GET, POST, PUT, DELETE) for cross-origin requests.
               .AllowAnyMethod()
               // Allow any HTTP header in the requests (e.g., Content-Type, Authorization).
               .AllowAnyHeader()
               // Required for cross-origin cookies
               // This is necessary when you want to send cookies, like JWT tokens in cookies, across origins.
-              .AllowCredentials(); 
+              .AllowCredentials();
     });
 });
 
