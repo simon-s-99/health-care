@@ -1,3 +1,4 @@
+using HealthCareABApi.Models;
 using HealthCareABApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,32 +14,66 @@ public class FeedbackController : ControllerBase
         _feedbackRepository = feedbackRepository;
     }
 
+    [HttpGet]
     public async Task<IActionResult> GetAllFeedback()
     {
-        // Call the repository method to retrieve all feedback
-        // Return the result with an appropriate HTTP status code
+        // Call the repository and tell it to retrieve all feedback
+        var feedbackList = await _feedbackRepository.GetAllAsync();
+
+        return Ok(feedbackList);
     }
 
-    public async Task<IActionResult> GetFeedbackById()
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetFeedbackById(string id)
     {
         // Call the repository method to find feedback by ID
-        // Handle the case where the feedback doesn't exist
-        // Return the result
+        var feedback = await _feedbackRepository.GetByIdAsync(id);
+
+        if (feedback == null)
+        {
+            return NotFound($"Feedback with ID {id} not found");
+        }
+
+        return Ok(feedback);
     }
 
-    public async Task<IActionResult> CreateFeedback()
+    [HttpPost]
+    public async Task<IActionResult> CreateFeedback([FromBody] Feedback feedback)
     {
         // Validate the feedback model
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
         // Call the repository method to insert feedback
+        await _feedbackRepository.CreateAsync(feedback);
+
         // Return a Created response
+        return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, feedback);
     }
 
-    public async Task<IActionResult> UpdateFeedback(Feedback feedback)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateFeedback(string id, [FromBody] Feedback feedback)
     {
         // Validate the feedback model
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         // Call the repository method to update feedback
-        // Handle the case where feedback doesn't exist
-        // Return the appropriate response
+        var existingFeedback = await _feedbackRepository.GetByIdAsync(id);
+        if (existingFeedback == null)
+        {
+            return NotFound($"Feedback with ID {id} not found");
+        }
+
+        feedback.Id = id;
+        await _feedbackRepository.UpdateAsync(id, feedback);
+
+        //204 response
+        return NoContent();
     }
 
 
