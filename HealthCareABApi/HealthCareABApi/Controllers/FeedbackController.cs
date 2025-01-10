@@ -56,7 +56,7 @@ public class FeedbackController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFeedback(string id, [FromBody] Feedback feedback)
     {
-        // Validate the feedback model
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
