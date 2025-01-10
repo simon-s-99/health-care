@@ -33,6 +33,10 @@ namespace HealthCareABApi.Controllers
             // Create and map a User entity with hashed password and default roles if none are specified.
             var user = new User
             {
+                Firstname = request.Firstname,
+                Lastname = request.Lastname,
+                Email = request.Email,
+                Phonenumber = request.Phonenumber,
                 Username = request.Username,
                 PasswordHash = _userService.HashPassword(request.Password),
                 Roles = request.Roles == null || !request.Roles.Any()
