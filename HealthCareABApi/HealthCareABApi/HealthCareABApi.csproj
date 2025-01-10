@@ -37,7 +37,7 @@
 	<None Remove="Repositories\Interfaces\" />
 	<None Remove="Repositories\Implementations\" />
 
-	  <Compile Remove="Tests\**" />
+	  <!--<Compile Remove="Tests\**" />-->
 	  <!-- Exclude all files in the Tests folder from production builds --> 
   </ItemGroup>
   <ItemGroup>

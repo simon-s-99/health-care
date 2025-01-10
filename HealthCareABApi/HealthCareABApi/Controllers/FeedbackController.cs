@@ -43,7 +43,7 @@ public class FeedbackController : ControllerBase
         // Validate the feedback model
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         // Call the repository method to insert feedback
