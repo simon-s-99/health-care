@@ -26,6 +26,7 @@ else
     );
 }
 
+
 // Register MongoDB context
 builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 
@@ -37,6 +38,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 // Register custom services
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtTokenService>();
+builder.Services.AddSingleton<AppointmentService>();
 //builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
 
 
