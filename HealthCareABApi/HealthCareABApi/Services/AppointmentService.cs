@@ -1,12 +1,13 @@
 ﻿using HealthCareABApi.Configurations;
 using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
+using HealthCareABApi.Repositories.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Services
 {
-    public class AppointmentService
+    public class AppointmentService : IAppointmentService
     {
         private readonly IMongoCollection<Appointment> _appointments;
 
@@ -70,7 +71,7 @@ namespace HealthCareABApi.Services
 
         public async Task DeleteAppointmentByIdAsync(string id)
         {
-            await _appointments.DeleteOneAsync(id);
+                await _appointments.DeleteOneAsync(id);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
+using HealthCareABApi.Repositories.Interfaces;
 using HealthCareABApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,9 +10,9 @@ namespace HealthCareABApi.Controllers
     [Route("api/[controller]")]
     public class AppointmentController : ControllerBase
     {
-        private readonly AppointmentService _appointmentService;
+        private readonly IAppointmentService _appointmentService;
 
-        public AppointmentController(AppointmentService appointmentService)
+        public AppointmentController(IAppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
         }
@@ -73,5 +74,7 @@ namespace HealthCareABApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }

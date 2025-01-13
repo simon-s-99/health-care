@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Implementations;
+using HealthCareABApi.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 // Register custom services
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtTokenService>();
-builder.Services.AddSingleton<AppointmentService>();
+builder.Services.AddSingleton<IAppointmentService, AppointmentService>();
 //builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
 
 
