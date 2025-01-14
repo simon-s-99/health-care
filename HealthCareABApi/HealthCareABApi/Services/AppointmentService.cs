@@ -57,20 +57,20 @@ namespace HealthCareABApi.Services
         {
             ArgumentNullException.ThrowIfNull(dto);
 
-            _ = await GetAppointmentByIdAsync(id) ?? throw new KeyNotFoundException("Appointment not found.");
+            var originalAppointment = await GetAppointmentByIdAsync(id) ?? throw new KeyNotFoundException("Appointment not found.");
 
-            if (dto.DateTime < DateTime.Today)
+            if (dto.DateTime is not null && dto.DateTime < DateTime.Today)
             {
                 throw new BadHttpRequestException("Invalid date.");
             }
 
             // Get appointment by id
-            var filter = Builders<Appointment>.Filter.Eq("id", id);
+            var filter = Builders<Appointment>.Filter.Eq(a => a.Id, id);
 
             // Define updates to be made
             var updates = Builders<Appointment>.Update.Combine(
-                Builders<Appointment>.Update.Set("DateTime", dto.DateTime),
-                Builders<Appointment>.Update.Set("Status", dto.Status)
+                Builders<Appointment>.Update.Set("DateTime", dto.DateTime ?? originalAppointment.DateTime), // If undefined, set them to their original values
+                Builders<Appointment>.Update.Set("Status", dto.Status ?? originalAppointment.Status)
             );
 
             await _appointments.UpdateOneAsync(filter, updates);
@@ -78,15 +78,12 @@ namespace HealthCareABApi.Services
 
         public async Task DeleteAppointmentByIdAsync(string id)
         {
-            var appointment = await GetAppointmentByIdAsync(id);
+            var appointment = await GetAppointmentByIdAsync(id) ?? throw new KeyNotFoundException("Appointment not found.");
 
-            if (appointment is null)
-            {
-                throw new KeyNotFoundException("Appointment not found.");
-            }
+            // Get appointment by id
+            var filter = Builders<Appointment>.Filter.Eq(a => a.Id, appointment.Id);
 
-            await _appointments.DeleteOneAsync(id);
-
+            await _appointments.DeleteOneAsync(filter);
         }
     }
 }

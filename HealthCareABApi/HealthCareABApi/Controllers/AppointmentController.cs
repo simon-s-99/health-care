@@ -23,18 +23,22 @@ namespace HealthCareABApi.Controllers
             try
             {
                 await _appointmentService.CreateAppointmentAsync(dto);
+                return StatusCode(201);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-            return Created();
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAppointmentById([FromQuery] string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Invalid id.");
+            }
+
             try
             {
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
@@ -55,6 +59,11 @@ namespace HealthCareABApi.Controllers
         [HttpPatch]
         public async Task<IActionResult> UpdateAppointmentById([FromQuery] string id, [FromBody] UpdateAppointmentDTO dto)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Invalid id.");
+            }
+
             try
             {
                 await _appointmentService.UpdateAppointmentByIdAsync(id, dto);
@@ -69,6 +78,11 @@ namespace HealthCareABApi.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteAppointmentById([FromQuery] string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Invalid id.");
+            }
+
             try
             {
                 await _appointmentService.DeleteAppointmentByIdAsync(id);
@@ -79,7 +93,5 @@ namespace HealthCareABApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
     }
 }

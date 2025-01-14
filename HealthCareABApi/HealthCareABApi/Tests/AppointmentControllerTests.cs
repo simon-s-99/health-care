@@ -12,25 +12,30 @@ namespace HealthCareABApi.Tests
     public class AppointmentControllerTests
     {
 
-        //[Fact]
-        //public async Task CreateAppointment_ReturnsCreatedResult_WhenEverythingIsInOrder()
-        //{
-        //    // Arrange
-        //    var mockService = new Mock<IAppointmentService>();
+        [Fact]
+        public async Task CreateAppointment_ReturnsCreatedResult_WhenEverythingIsInOrder()
+        {
+            // Arrange
+            var mockService = new Mock<IAppointmentService>();
 
-        //    var controller = new AppointmentController(mockService.Object);
+            var controller = new AppointmentController(mockService.Object);
 
-        //    CreateAppointmentDTO mockDto = new CreateAppointmentDTO();
-        //    Appointment appointment = new Appointment();
-        //    mockService.Setup(svc => svc.CreateAppointmentAsync(mockDto)).Returns(appointment);
+            CreateAppointmentDTO dto = new CreateAppointmentDTO();
+            Appointment appointment = new Appointment
+            {
+                Id = "42"
+            };
 
-        //    var result = await controller.CreateAppointment(mockDto);
+            mockService.Setup(svc => svc.CreateAppointmentAsync(dto)).Returns(Task.CompletedTask);
 
-        //    // Assert
-        //    var createdResult = Assert.IsType<CreatedResult>(result);
-        //    Assert.Equal(201, createdResult.StatusCode);
-        //    mockService.Verify(svc => svc.CreateAppointmentAsync(mockDto), Times.Once);
-        //}
+            // Act
+            var result = await controller.CreateAppointment(dto);
+
+            // Assert
+            var createdResult = Assert.IsType<StatusCodeResult>(result);
+            Assert.Equal(201, createdResult.StatusCode);
+            mockService.Verify(svc => svc.CreateAppointmentAsync(dto), Times.Once);
+        }
 
         [Fact]
         public async Task GetAppointmentById_ReturnsOkResult_WhenAppointmentExists()
@@ -74,7 +79,7 @@ namespace HealthCareABApi.Tests
 
             var controller = new AppointmentController(mockAppointmentService.Object);
 
-            string nonexistentId = "sometingnotfound";
+            string nonexistentId = "wadawdw55wdawdawd";
 
             mockAppointmentService.Setup(svc => svc.GetAppointmentByIdAsync(nonexistentId)).ReturnsAsync((Appointment)null);
 
@@ -88,26 +93,25 @@ namespace HealthCareABApi.Tests
             mockAppointmentService.Verify(svc => svc.GetAppointmentByIdAsync(nonexistentId), Times.Once);
         }
 
-        //[Fact]
-        //public async Task DeleteAppointment_ReturnsNotFoundResult_WhenAppointmentDoesNotExist()
-        //{
-        //    // Arrange
-        //    var mockAppointmentService = new Mock<IAppointmentService>();
+        [Fact]
+        public async Task DeleteAppointmentById_ReturnsNotFoundResult_WhenAppointmentDoesNotExist()
+        {
+            // Arrange
+            var mockService = new Mock<IAppointmentService>();
 
-        //    var controller = new AppointmentController(mockAppointmentService.Object);
+            var controller = new AppointmentController(mockService.Object);
 
-        //    string nonexistentId = "sometingnotfound";
+            string id = "uiodwajhoiudjaw";
 
-        //    //mockAppointmentService.Setup(svc => svc.DeleteAppointmentByIdAsync(nonexistentId)).ReturnsAsync();
+            mockService.Setup(svc => svc.DeleteAppointmentByIdAsync(id)).Returns(Task.CompletedTask);
 
-        //    // Act
-        //    var result = await controller.GetAppointmentById(nonexistentId);
+            // Act
+            var result = await controller.DeleteAppointmentById(id);
 
-        //    // Assert
-        //    var notFoundResult = Assert.IsType<NotFoundResult>(result);
-        //    Assert.Equal(404, notFoundResult.StatusCode);
-
-        //    mockAppointmentService.Verify(svc => svc.GetAppointmentByIdAsync(nonexistentId), Times.Once);
-        //}
+            // Assert
+            var createdResult = Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, createdResult.StatusCode);
+            mockService.Verify(svc => svc.DeleteAppointmentByIdAsync(id), Times.Once);
+        }
     }
 }

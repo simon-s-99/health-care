@@ -4,9 +4,9 @@ namespace HealthCareABApi.DTO
 {
     public class UpdateAppointmentDTO
     {
-        public DateTime DateTime { get; set; }
+        public DateTime? DateTime { get; set; }
 
-        public AppointmentStatus Status { get; set; }
+        public AppointmentStatus? Status { get; set; }
     }
 }
 

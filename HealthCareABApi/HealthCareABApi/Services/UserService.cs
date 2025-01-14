@@ -58,5 +58,4 @@ namespace HealthCareABApi.Services
             return BCrypt.Net.BCrypt.Verify(enteredPassword, storedHash);
         }
     }
-
 }
