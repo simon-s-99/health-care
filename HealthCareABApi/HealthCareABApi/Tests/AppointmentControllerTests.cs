@@ -2,6 +2,7 @@
 using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -21,7 +22,7 @@ namespace HealthCareABApi.Tests
 
         //    CreateAppointmentDTO mockDto = new CreateAppointmentDTO();
         //    Appointment appointment = new Appointment();
-        //    mockService.Setup(svc => svc.CreateAppointmentAsync(mockDto)).ReturnsAsync(appointment);
+        //    mockService.Setup(svc => svc.CreateAppointmentAsync(mockDto)).Returns(appointment);
 
         //    var result = await controller.CreateAppointment(mockDto);
 
@@ -35,8 +36,9 @@ namespace HealthCareABApi.Tests
         public async Task GetAppointmentById_ReturnsOkResult_WhenAppointmentExists()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+
+            var controller = new AppointmentController(mockAppointmentService.Object);
 
             Appointment appointment = new Appointment
             {
@@ -47,7 +49,7 @@ namespace HealthCareABApi.Tests
                 Status = AppointmentStatus.Scheduled
             };
 
-            mockService.Setup(svc => svc.GetAppointmentByIdAsync(appointment.Id)).ReturnsAsync(appointment);
+            mockAppointmentService.Setup(svc => svc.GetAppointmentByIdAsync(appointment.Id)).ReturnsAsync(appointment);
 
             // Act
             var result = await controller.GetAppointmentById(appointment.Id);
@@ -55,19 +57,26 @@ namespace HealthCareABApi.Tests
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, okResult.StatusCode);
-            mockService.Verify(svc => svc.GetAppointmentByIdAsync(appointment.Id), Times.Once);
+
+            var returnedAppointment = Assert.IsType<Appointment>(okResult.Value);
+            Assert.Equal(appointment.Id, returnedAppointment.Id);
+            Assert.Equal(appointment.PatientId, returnedAppointment.PatientId);
+            Assert.Equal(appointment.CaregiverId, returnedAppointment.CaregiverId);
+            Assert.Equal(appointment.DateTime, returnedAppointment.DateTime);
+            Assert.Equal(appointment.Status, returnedAppointment.Status);
         }
 
         [Fact]
         public async Task GetAppointmentById_ReturnsNotFoundResult_WhenAppointmentDoesNotExists()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+
+            var controller = new AppointmentController(mockAppointmentService.Object);
 
             string nonexistentId = "sometingnotfound";
 
-            mockService.Setup(svc => svc.GetAppointmentByIdAsync(nonexistentId)).ReturnsAsync((Appointment)null);
+            mockAppointmentService.Setup(svc => svc.GetAppointmentByIdAsync(nonexistentId)).ReturnsAsync((Appointment)null);
 
             // Act
             var result = await controller.GetAppointmentById(nonexistentId);
@@ -75,7 +84,30 @@ namespace HealthCareABApi.Tests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
-            mockService.Verify(svc => svc.GetAppointmentByIdAsync(nonexistentId), Times.Once);
+
+            mockAppointmentService.Verify(svc => svc.GetAppointmentByIdAsync(nonexistentId), Times.Once);
         }
+
+        //[Fact]
+        //public async Task DeleteAppointment_ReturnsNotFoundResult_WhenAppointmentDoesNotExist()
+        //{
+        //    // Arrange
+        //    var mockAppointmentService = new Mock<IAppointmentService>();
+
+        //    var controller = new AppointmentController(mockAppointmentService.Object);
+
+        //    string nonexistentId = "sometingnotfound";
+
+        //    //mockAppointmentService.Setup(svc => svc.DeleteAppointmentByIdAsync(nonexistentId)).ReturnsAsync();
+
+        //    // Act
+        //    var result = await controller.GetAppointmentById(nonexistentId);
+
+        //    // Assert
+        //    var notFoundResult = Assert.IsType<NotFoundResult>(result);
+        //    Assert.Equal(404, notFoundResult.StatusCode);
+
+        //    mockAppointmentService.Verify(svc => svc.GetAppointmentByIdAsync(nonexistentId), Times.Once);
+        //}
     }
 }

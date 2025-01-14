@@ -10,17 +10,26 @@ namespace HealthCareABApi.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IMongoCollection<Appointment> _appointments;
+        private readonly IUserService _userService;
 
-        public AppointmentService(IOptions<MongoDBSettings> mongoDBSettings)
+        public AppointmentService(IOptions<MongoDBSettings> mongoDBSettings, IUserService userService)
         {
             var client = new MongoClient(mongoDBSettings.Value.ConnectionString);
             var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
             _appointments = database.GetCollection<Appointment>("Appointments");
+            _userService = userService;
         }
 
         public async Task CreateAppointmentAsync(CreateAppointmentDTO dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
+
+            bool bothUsersExist = await _userService.ExistsByIdAsync(dto.PatientId) && await _userService.ExistsByIdAsync(dto.CaregiverId);
+
+            if (!bothUsersExist)
+            {
+                throw new KeyNotFoundException("User(s) not found.");
+            }
 
             if (dto.DateTime < DateTime.Today)
             {
@@ -35,22 +44,20 @@ namespace HealthCareABApi.Services
                 Status = dto.Status,
             };
 
-            // TODO: Add logic to check that patient and caregiver actually exist
             await _appointments.InsertOneAsync(appointment);
         }
 
         public async Task<Appointment> GetAppointmentByIdAsync(string id)
         {
             var appointment = await _appointments.Find(u => u.Id == id).FirstOrDefaultAsync();
-
-            ArgumentNullException.ThrowIfNull(appointment);
-
             return appointment;
         }
 
         public async Task UpdateAppointmentByIdAsync(string id, UpdateAppointmentDTO dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
+
+            _ = await GetAppointmentByIdAsync(id) ?? throw new KeyNotFoundException("Appointment not found.");
 
             if (dto.DateTime < DateTime.Today)
             {
@@ -71,7 +78,15 @@ namespace HealthCareABApi.Services
 
         public async Task DeleteAppointmentByIdAsync(string id)
         {
-                await _appointments.DeleteOneAsync(id);
+            var appointment = await GetAppointmentByIdAsync(id);
+
+            if (appointment is null)
+            {
+                throw new KeyNotFoundException("Appointment not found.");
+            }
+
+            await _appointments.DeleteOneAsync(id);
+
         }
     }
 }

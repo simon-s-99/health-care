@@ -6,11 +6,12 @@ using MongoDB.Driver;
 using System.Text;
 using System.Security.Cryptography;
 using HealthCareABApi.DTO;
+using HealthCareABApi.Repositories.Interfaces;
 
 namespace HealthCareABApi.Services
 {
 
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IMongoCollection<User> _users;
 

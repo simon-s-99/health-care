@@ -38,8 +38,13 @@ namespace HealthCareABApi.Controllers
             try
             {
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
-                return Ok(appointment);
 
+                if (appointment is null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(appointment);
             }
             catch (Exception ex)
             {

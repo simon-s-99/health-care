@@ -37,7 +37,7 @@ builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 // Register custom services
-builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddSingleton<IAppointmentService, AppointmentService>();
 //builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
