@@ -1,11 +1,9 @@
 ﻿using HealthCareABApi.Models; 
 using HealthCareABApi.Repositories; 
 using Microsoft.AspNetCore.Mvc; 
-using Moq; // A library to simulate (mock) the behavior of objects like the repository
-using Xunit; // A testing framework to write and run tests
-using System.Collections.Generic; // Allows the use of lists to store multiple feedback items
-using System.Threading.Tasks; // Enables asynchronous programming for better performance
-using HealthCareABApi.Controllers; // Imports the FeedbackController class
+using Moq; // library to simulate (mock) the behavior of objects like the repository
+using Xunit; 
+
 
 namespace HealthCareABApi.Tests.FeedbackTests
 {
@@ -22,6 +20,7 @@ namespace HealthCareABApi.Tests.FeedbackTests
             // Creates a mock object for the feedback repository
             _mockRepo = new Mock<IFeedbackRepository>();
 
+            // Passes the mock repository to the controller
             _controller = new FeedbackController(_mockRepo.Object);
         }
 
