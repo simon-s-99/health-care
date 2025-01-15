@@ -29,6 +29,17 @@ namespace HealthCareABApi.Controllers
             {
                 return Conflict("Username is already taken");
             }
+            // Check if email already exist
+            if (await _userService.ExistsByEmailAsync(request.Email))
+            {
+                return Conflict("Email is already registered");
+            }
+
+            // Check if phone number already exists
+            if (await _userService.ExistsByPhoneNumberAsync(request.Phonenumber))
+            {
+            return Conflict("Phone number is already registered");
+            }
 
             // Create and map a User entity with hashed password and default roles if none are specified.
             var user = new User
