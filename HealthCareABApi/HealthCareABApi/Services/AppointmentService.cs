@@ -22,18 +22,11 @@ namespace HealthCareABApi.Services
 
         public async Task CreateAppointmentAsync(CreateAppointmentDTO dto)
         {
-            ArgumentNullException.ThrowIfNull(dto);
-
             bool bothUsersExist = await _userService.ExistsByIdAsync(dto.PatientId) && await _userService.ExistsByIdAsync(dto.CaregiverId);
 
             if (!bothUsersExist)
             {
                 throw new KeyNotFoundException("User(s) not found.");
-            }
-
-            if (dto.DateTime < DateTime.Today)
-            {
-                throw new BadHttpRequestException("Invalid date.");
             }
 
             Appointment appointment = new Appointment

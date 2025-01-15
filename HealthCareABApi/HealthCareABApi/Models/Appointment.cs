@@ -27,7 +27,8 @@ namespace HealthCareABApi.Models
     {
         Scheduled,
         Completed,
-        Cancelled
+        Cancelled,
+        None
     }
 }
 

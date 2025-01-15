@@ -1,7 +1,6 @@
 ﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
-using HealthCareABApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareABApi.Controllers
@@ -20,6 +19,11 @@ namespace HealthCareABApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAppointment([FromBody] CreateAppointmentDTO dto)
         {
+            if (string.IsNullOrEmpty(dto.PatientId) || string.IsNullOrEmpty(dto.CaregiverId) || dto.DateTime < DateTime.Today || dto.Status == AppointmentStatus.None)
+            {
+                return BadRequest("One more more fields are null.");
+            }
+
             try
             {
                 await _appointmentService.CreateAppointmentAsync(dto);

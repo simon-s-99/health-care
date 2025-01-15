@@ -1,17 +1,20 @@
 ﻿using HealthCareABApi.Models;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareABApi.DTO
 {
     public class CreateAppointmentDTO
     {
-        public string PatientId { get; set; }
+        [Required]
+        public string PatientId { get; set; } = string.Empty;
 
-        public string CaregiverId { get; set; }
+        [Required]
+        public string CaregiverId { get; set; } = string.Empty;
 
-        public DateTime DateTime { get; set; }
+        [Required]
+        public DateTime DateTime { get; set; } = new DateTime(1111, 11, 11); // Initialize as an invalid date
 
-        public AppointmentStatus Status { get; set; }
+        [Required]
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.None;
     }
 }
