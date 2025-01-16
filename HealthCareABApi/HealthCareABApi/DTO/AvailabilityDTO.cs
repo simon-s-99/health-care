@@ -2,8 +2,11 @@
 {
     public class AvailabilityDTO
     {
-        public List<DateTime> AvailableSlots { get; set; }
+        public AvailabilityDTO(List<DateTime> availableSlots)
+        {
+            AvailableSlots = availableSlots;
+        }
+
+        private List<DateTime> AvailableSlots { get; set; }
     }
-
 }
-
