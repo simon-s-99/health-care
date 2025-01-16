@@ -3,7 +3,6 @@ using HealthCareABApi.Configurations;
 using HealthCareABApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Implementations;
 
