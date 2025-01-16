@@ -12,18 +12,19 @@ namespace HealthCareABApi.Models
         [BsonRequired] 
         public string Firstname { get; set; }
         [BsonRequired]
-        public string Lastname { get; set; }
+        public required string Firstname { get; set; }
         [BsonRequired]
-        public string Email { get; set; }
+        public required string Lastname { get; set; }
         [BsonRequired]
-        public string Phonenumber { get; set; }
+        public required string Email { get; set; }
         [BsonRequired]
-        public string Username { get; set; }
+        public required string Phonenumber { get; set; }
         [BsonRequired]
-        public string PasswordHash { get; set; }
+        public required string Username { get; set; }
+        [BsonRequired]
+        public required string PasswordHash { get; set; }
         // List of roles, a User can have one or more roles if needed.
         // Not specifying a role during User creation sets it to User by default
-        public List<string> Roles { get; set; }
+        public required List<string> Roles { get; set; }
     }
-
 }

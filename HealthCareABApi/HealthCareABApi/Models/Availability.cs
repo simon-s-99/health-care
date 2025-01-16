@@ -11,9 +11,9 @@ namespace HealthCareABApi.Models
 
         // Reference to Caregiver (User)
         [BsonRepresentation(BsonType.ObjectId)]
-        public string CaregiverId { get; set; }
+        public required string CaregiverId { get; set; }
 
-        public List<DateTime> AvailableSlots { get; set; }
+        public List<DateTime>? AvailableSlots { get; set; }
     }
 }
 

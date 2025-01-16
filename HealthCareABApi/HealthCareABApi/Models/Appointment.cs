@@ -11,11 +11,11 @@ namespace HealthCareABApi.Models
 
         // Reference to Patient (User)
         [BsonRepresentation(BsonType.ObjectId)]
-        public string PatientId { get; set; }
+        public required string PatientId { get; set; }
 
         // Reference to Caregiver (User)
         [BsonRepresentation(BsonType.ObjectId)]
-        public string CaregiverId { get; set; }
+        public required string CaregiverId { get; set; }
 
         public DateTime DateTime { get; set; }
 

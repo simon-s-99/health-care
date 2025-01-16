@@ -11,13 +11,13 @@ namespace HealthCareABApi.Models
 
         // Reference to Appointment
         [BsonRepresentation(BsonType.ObjectId)]
-        public string AppointmentId { get; set; }
+        public required string AppointmentId { get; set; }
 
         // Reference to Patient (User)
         [BsonRepresentation(BsonType.ObjectId)]
-        public string PatientId { get; set; }
+        public required string PatientId { get; set; }
 
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 }
 
