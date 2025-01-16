@@ -11,7 +11,7 @@ using HealthCareABApi.Repositories.Interfaces;
 namespace HealthCareABApi.Services
 {
 
-    public class UserService : IUserService
+    public class UserService
     {
         private readonly IMongoCollection<User> _users;
 
@@ -30,6 +30,8 @@ namespace HealthCareABApi.Services
         public async Task<bool> ExistsByIdAsync(string id)
         {
             return await _users.Find(u => u.Id == id).AnyAsync();
+        }
+
         public async Task<bool> ExistsByEmailAsync(string email)
         {
             return await _users.Find(u => u.Email == email).AnyAsync();
@@ -43,6 +45,11 @@ namespace HealthCareABApi.Services
         public async Task<User> GetUserByUsernameAsync(string username)
         {
             return await _users.Find(u => u.Username == username).FirstOrDefaultAsync();
+        }
+
+        public async Task<User> GetUserByIdAsync(string id)
+        {
+            return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task CreateUserAsync(User user)

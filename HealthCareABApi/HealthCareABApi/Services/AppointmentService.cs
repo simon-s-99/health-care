@@ -10,9 +10,9 @@ namespace HealthCareABApi.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IMongoCollection<Appointment> _appointments;
-        private readonly IUserService _userService;
+        private readonly UserService _userService;
 
-        public AppointmentService(IOptions<MongoDBSettings> mongoDBSettings, IUserService userService)
+        public AppointmentService(IOptions<MongoDBSettings> mongoDBSettings, UserService userService)
         {
             var client = new MongoClient(mongoDBSettings.Value.ConnectionString);
             var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
