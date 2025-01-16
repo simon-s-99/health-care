@@ -5,12 +5,13 @@ namespace HealthCareABApi.Models
 {
     public class User
     {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         // MongoDB ObjectId stored as a string
         public string Id { get; set; }
-        [BsonRequired] 
-        public string Firstname { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
         [BsonRequired]
         public required string Firstname { get; set; }
         [BsonRequired]
