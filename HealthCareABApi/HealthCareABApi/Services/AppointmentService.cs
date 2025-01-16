@@ -59,7 +59,7 @@ namespace HealthCareABApi.Services
                 appointments = await _appointments.Find(u => u.CaregiverId == id).ToListAsync();
             }
 
-            return appointments;
+            return appointments.OrderBy(a => a.DateTime).ToList();
         }
 
         public async Task UpdateAppointmentByIdAsync(string id, UpdateAppointmentDTO dto)
