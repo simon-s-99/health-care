@@ -60,6 +60,25 @@ namespace HealthCareABApi.Controllers
             }
         }
 
+        [HttpGet("user/")]
+        public async Task<IActionResult> GetAllAppointmentsByUserIdAsync([FromQuery] string id, [FromQuery] bool isPatient = true) // Defaults to true
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Invalid id.");
+            }
+
+            try
+            {
+                var appointments = await _appointmentService.GetAllAppointmentsByUserIdAsync(id, isPatient);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPatch]
         public async Task<IActionResult> UpdateAppointmentById([FromQuery] string id, [FromBody] UpdateAppointmentDTO dto)
         {

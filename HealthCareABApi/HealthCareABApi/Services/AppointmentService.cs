@@ -46,6 +46,22 @@ namespace HealthCareABApi.Services
             return appointment;
         }
 
+        public async Task<List<Appointment>> GetAllAppointmentsByUserIdAsync(string id, bool isPatient)
+        {
+            var appointments = new List<Appointment>();
+
+            if (isPatient)
+            {
+                appointments = await _appointments.Find(u => u.PatientId == id).ToListAsync();
+            } 
+            else
+            {
+                appointments = await _appointments.Find(u => u.CaregiverId == id).ToListAsync();
+            }
+
+            return appointments;
+        }
+
         public async Task UpdateAppointmentByIdAsync(string id, UpdateAppointmentDTO dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
