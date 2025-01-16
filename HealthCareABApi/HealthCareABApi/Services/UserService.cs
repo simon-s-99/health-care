@@ -30,6 +30,14 @@ namespace HealthCareABApi.Services
         public async Task<bool> ExistsByIdAsync(string id)
         {
             return await _users.Find(u => u.Id == id).AnyAsync();
+        public async Task<bool> ExistsByEmailAsync(string email)
+        {
+            return await _users.Find(u => u.Email == email).AnyAsync();
+        }
+
+        public async Task<bool> ExistsByPhoneNumberAsync(string phoneNumber)
+        {
+            return await _users.Find(u => u.Phonenumber == phoneNumber).AnyAsync();
         }
 
         public async Task<User> GetUserByUsernameAsync(string username)
