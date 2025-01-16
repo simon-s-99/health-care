@@ -137,7 +137,7 @@ namespace HealthCareABApi.Controllers
         public IActionResult CheckAuthentication()
         {
             // If the user is not authenticated, return an unauthorized response.
-            if (!User.Identity.IsAuthenticated)
+            if (!User.Identity!.IsAuthenticated)
             {
                 return Unauthorized("Not authenticated");
             }
