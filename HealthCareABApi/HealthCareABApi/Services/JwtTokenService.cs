@@ -15,6 +15,9 @@ namespace HealthCareABApi.Services
         private readonly string _audience;
         private readonly int _expiryInMinutes;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8601 // Possible null reference assignment.
+#pragma warning disable CS8604 // Possible null reference argument.
         // Constructor that initializes the JWT settings from the application's configuration.
         // The settings are defined in appsettings.json.
         public JwtTokenService(IConfiguration configuration)
@@ -25,6 +28,9 @@ namespace HealthCareABApi.Services
             _audience = configuration["JwtSettings:Audience"];
             _expiryInMinutes = int.Parse(configuration["JwtSettings:ExpiryInMinutes"]);
         }
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8601 // Possible null reference assignment.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         // Method to generate a JWT token for a given user.
         public string GenerateToken(User user)
