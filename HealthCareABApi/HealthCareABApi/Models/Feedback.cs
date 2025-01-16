@@ -10,7 +10,7 @@ namespace HealthCareABApi.Models
       
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         // Reference to Appointment
         [BsonRepresentation(BsonType.ObjectId)]
@@ -25,6 +25,10 @@ namespace HealthCareABApi.Models
         [Required(ErrorMessage = "Comment is required.")]
         [StringLength(500, ErrorMessage = "Comment cannot exceed 500 characters.")]
         public string Comment { get; set; }
+
+        [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
+        public int Rating { get; set; }
+
 
     }
 }
