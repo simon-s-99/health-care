@@ -53,6 +53,13 @@ public class FeedbackController : ControllerBase
         return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, feedback);
     }
 
+    [HttpGet("TestConnection")]
+    public IActionResult TestConnection()
+    {
+        return Ok("Hello from the backend!");
+    }
+
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFeedback(string id, [FromBody] Feedback feedback)
     {
