@@ -19,14 +19,14 @@ namespace HealthCareABApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAvailability([FromBody] CreateAvailabilityDTO dto)
         {
-            if (string.IsNullOrEmpty(dto.PatientId) || string.IsNullOrEmpty(dto.CaregiverId) || dto.DateTime < DateTime.Today || dto.Status == AppointmentStatus.None)
+            if (dto.AvailableSlots.Count == 0 || string.IsNullOrEmpty(dto.CaregiverId))
             {
                 return BadRequest("One more more fields are null.");
             }
 
             try
             {
-                await _availabilityService.CreateAppointmentAsync(dto);
+                await _availabilityService.CreateAvailabilityAsync(dto);
                 return StatusCode(201);
             }
             catch (Exception ex)
@@ -36,7 +36,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAppointmentById([FromQuery] string id)
+        public async Task<IActionResult> GetAvailabilityById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -45,14 +45,14 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                var appointment = await _availabilityService.GetAppointmentByIdAsync(id);
+                var availability = await _availabilityService.GetAvailabilityByIdAsync(id);
 
-                if (appointment is null)
+                if (availability is null)
                 {
                     return NotFound();
                 }
 
-                return Ok(appointment);
+                return Ok(availability);
             }
             catch (Exception ex)
             {
@@ -61,17 +61,17 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpGet("user/")]
-        public async Task<IActionResult> GetAllAppointmentsByUserIdAsync([FromQuery] string id, [FromQuery] bool isPatient = true) // Defaults to true
+        public async Task<IActionResult> GetAllAvailabilitiesByCaregiverIdAsync([FromQuery] string caregiverId)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(caregiverId))
             {
                 return BadRequest("Invalid id.");
             }
 
             try
             {
-                var appointments = await _availabilityService.GetAllAppointmentsByUserIdAsync(id, isPatient);
-                return Ok(appointments);
+                var availabilities = await _availabilityService.GetAllAvailabilitiesByCaregiverIdAsync(caregiverId);
+                return Ok(availabilities);
             }
             catch (Exception ex)
             {
@@ -80,7 +80,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateAppointmentById([FromQuery] string id, [FromBody] UpdateAppointmentDTO dto)
+        public async Task<IActionResult> UpdateAvailabilityById([FromQuery] string id, [FromBody] UpdateAvailabilityDTO dto)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -89,7 +89,7 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                await _availabilityService.UpdateAppointmentByIdAsync(id, dto);
+                await _availabilityService.UpdateAvailabilityByIdAsync(id, dto);
                 return NoContent();
             }
             catch (Exception ex)
@@ -99,7 +99,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAppointmentById([FromQuery] string id)
+        public async Task<IActionResult> DeleteAvailabilityById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -108,7 +108,7 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                await _availabilityService.DeleteAppointmentByIdAsync(id);
+                await _availabilityService.DeleteAvailabilityByIdAsync(id);
                 return NoContent();
             }
             catch (Exception ex)
