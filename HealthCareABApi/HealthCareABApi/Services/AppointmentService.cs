@@ -59,7 +59,7 @@ namespace HealthCareABApi.Services
                 appointments = await _appointments.Find(u => u.CaregiverId == id).ToListAsync();
             }
 
-            return appointments.OrderBy(a => a.DateTime).ToList();
+            return appointments.OrderBy(a => a.DateTime).ToList(); //Returns empty array if user is valid but no appointments are found
         }
 
         public async Task UpdateAppointmentByIdAsync(string id, UpdateAppointmentDTO dto)
