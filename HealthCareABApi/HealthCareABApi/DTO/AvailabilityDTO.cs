@@ -1,4 +1,4 @@
-﻿namespace HealthCareABApi.DTO
+namespace HealthCareABApi.DTO
 {
     public class AvailabilityDTO
     {
