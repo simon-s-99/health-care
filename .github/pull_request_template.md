@@ -1,12 +1,3 @@
----
-name: Standard Pull Request
-about: Standard template for a PR.
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## Your checklist for this pull request
 
 - [ ] The code has been tested & works (i.e. no glaring bugs or hidden breaking changes). *If it does not explain why in description.*
@@ -14,9 +5,10 @@ assignees: ''
 - [ ] Complicated & hard to read parts of the code have comments.
 - [ ] The code has been formatted correctly. *Correct indentation and so on.*
 - [ ] You are making a pull request against the correct branch.
+- [ ] You will assign all applicable labels to this Pull Request.
 - [ ] You will provide a detailed description.
-- [ ] You will assign yourself to this Pull Request.
-- [ ] You will request at least 1 reviewer.
+- [ ] You will assign yourself to this Pull Request __*OR*__ verify that the bot/action has assigned you automatically.
+- [ ] You will request at least 2 reviewers __*OR*__ verify that the bot/action has requested reviewers automatically.
 
 # Description
 
