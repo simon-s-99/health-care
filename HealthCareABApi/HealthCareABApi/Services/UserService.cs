@@ -1,4 +1,4 @@
-﻿using HealthCareABApi.Configurations;
+using HealthCareABApi.Configurations;
 using HealthCareABApi.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;

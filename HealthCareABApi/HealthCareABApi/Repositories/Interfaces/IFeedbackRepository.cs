@@ -1,4 +1,4 @@
-﻿using HealthCareABApi.Models;
+using HealthCareABApi.Models;
 
 namespace HealthCareABApi.Repositories
 {
