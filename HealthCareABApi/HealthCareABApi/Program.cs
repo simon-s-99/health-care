@@ -40,7 +40,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddSingleton<IAppointmentService, AppointmentService>();
-//builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
+builder.Services.AddSingleton<IAvailabilityService, AvailabilityService>();
 
 
 

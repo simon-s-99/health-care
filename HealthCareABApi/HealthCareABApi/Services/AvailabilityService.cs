@@ -48,10 +48,34 @@ namespace HealthCareABApi.Services
             await _availabilities.DeleteOneAsync(filter);
         }
 
-        public async Task<List<Availability>> GetAllAvailabilitiesByCaregiverIdAsync(string caregiverId)
+        public async Task<bool> GetAvailabilityStatusByCaregiverIdAndDateAsync(string caregiverId, DateTime dateTime)
         {
-            var availabilities = await _availabilities.Find(u => u.CaregiverId == caregiverId).ToListAsync();
-            return availabilities;
+            bool isAvailable = await _availabilities.Find(a => a.CaregiverId == caregiverId && a.AvailableSlots.Contains(dateTime)).AnyAsync();
+            return isAvailable;
+        }
+
+        public async Task<List<Availability>> GetAllAvailabilitiesAsync()
+        {
+            return await _availabilities.Find(a => true).ToListAsync();
+        }
+
+        public async Task<List<Availability>> GetAllAvailabilitiesByDateAsync(DateTime date)
+        {
+            var allAvailabilities = await GetAllAvailabilitiesAsync();
+
+            List<Availability> result = new List<Availability>();
+
+            foreach (var availability in allAvailabilities)
+            {
+                foreach (var slot in availability.AvailableSlots)
+                {
+                    if (slot.ToString().Split(" ")[0] == date.ToString().Split(" ")[0]) 
+                    {
+                        result.Add(availability);
+                    }
+                }
+            }
+            return result;
         }
 
         public async Task<Availability> GetAvailabilityByIdAsync(string id)

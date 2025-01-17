@@ -11,13 +11,16 @@ namespace HealthCareABApi.Services
     {
         private readonly IMongoCollection<Appointment> _appointments;
         private readonly UserService _userService;
+        private readonly IAvailabilityService _availabilityService;
 
-        public AppointmentService(IOptions<MongoDBSettings> mongoDBSettings, UserService userService)
+
+        public AppointmentService(IOptions<MongoDBSettings> mongoDBSettings, UserService userService, IAvailabilityService availabilityService)
         {
             var client = new MongoClient(mongoDBSettings.Value.ConnectionString);
             var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
             _appointments = database.GetCollection<Appointment>("Appointments");
             _userService = userService;
+            _availabilityService = availabilityService;
         }
 
         public async Task CreateAppointmentAsync(CreateAppointmentDTO dto)
@@ -27,6 +30,14 @@ namespace HealthCareABApi.Services
             if (!bothUsersExist)
             {
                 throw new KeyNotFoundException("User(s) not found.");
+            }
+
+            bool caregiverIsAvailable = await _availabilityService.GetAvailabilityStatusByCaregiverIdAndDateAsync(dto.CaregiverId, dto.DateTime);
+
+            if (!caregiverIsAvailable)
+            {
+                throw new BadHttpRequestException("Caregiver is not available.");
+
             }
 
             Appointment appointment = new Appointment
@@ -46,7 +57,7 @@ namespace HealthCareABApi.Services
             return appointment;
         }
 
-        public async Task<List<Appointment>> GetAllAppointmentsByUserIdAsync(string id, bool isPatient)
+        public async Task<List<Appointment>> GetAllAppointmentsByUserIdAsync(string id, DateTime? date, bool isPatient)
         {
             var appointments = new List<Appointment>();
 
@@ -57,6 +68,11 @@ namespace HealthCareABApi.Services
             else
             {
                 appointments = await _appointments.Find(u => u.CaregiverId == id).ToListAsync();
+            }
+
+            if (date is not null)
+            {
+                appointments = appointments.FindAll(a => a.DateTime.Date == date.Value.Date);
             }
 
             return appointments.OrderBy(a => a.DateTime).ToList();

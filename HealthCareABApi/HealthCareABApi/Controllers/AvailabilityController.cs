@@ -60,17 +60,17 @@ namespace HealthCareABApi.Controllers
             }
         }
 
-        [HttpGet("user/")]
-        public async Task<IActionResult> GetAllAvailabilitiesByCaregiverIdAsync([FromQuery] string caregiverId)
+        [HttpGet("date")]
+        public async Task<IActionResult> GetAllAvailabilitiesByDate([FromQuery] DateTime date)
         {
-            if (string.IsNullOrEmpty(caregiverId))
+            if (date < DateTime.Today)
             {
-                return BadRequest("Invalid id.");
+                return BadRequest("Invalid date.");
             }
 
             try
             {
-                var availabilities = await _availabilityService.GetAllAvailabilitiesByCaregiverIdAsync(caregiverId);
+                var availabilities = await _availabilityService.GetAllAvailabilitiesByDateAsync(date);
                 return Ok(availabilities);
             }
             catch (Exception ex)
