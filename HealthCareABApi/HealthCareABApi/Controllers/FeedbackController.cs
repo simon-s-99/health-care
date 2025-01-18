@@ -1,5 +1,6 @@
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -8,27 +9,30 @@ public class FeedbackController : ControllerBase
 {
     private readonly IFeedbackRepository _feedbackRepository;
 
-    //constructor
+    // Constructor to inject the feedback repository
     public FeedbackController(IFeedbackRepository feedbackRepository)
     {
         _feedbackRepository = feedbackRepository;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllFeedback()
-    {
-        // Call the repository and tell it to retrieve all feedback
-        var feedbackList = await _feedbackRepository.GetAllAsync();
 
-        return Ok(feedbackList);
+    [HttpGet]
+    public async Task<IActionResult> GetFeedback([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
+    {
+        var feedbackList = await _feedbackRepository.GetAllAsync();
+        var paginatedList = feedbackList.Skip((page - 1) * pageSize).Take(pageSize).ToList(); // Convert to List
+        return Ok(paginatedList);
     }
+
+
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFeedbackById(string id)
     {
-        // Call the repository method to find feedback by ID
+        // Find feedback by ID using the repository
         var feedback = await _feedbackRepository.GetByIdAsync(id);
 
+        // Return 404 if feedback is not found
         if (feedback == null)
         {
             return NotFound($"Feedback with ID {id} not found");
@@ -37,7 +41,9 @@ public class FeedbackController : ControllerBase
         return Ok(feedback);
     }
 
+
     [HttpPost]
+    //[Authorize]
     public async Task<IActionResult> CreateFeedback([FromBody] Feedback feedback)
     {
         // Validate the feedback model
@@ -46,42 +52,37 @@ public class FeedbackController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        // Call the repository method to insert feedback
+        // Save the feedback to the database using the repository
         await _feedbackRepository.CreateAsync(feedback);
 
-        // Return a Created response
+        // Return a Created response with the new feedback's details
         return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, feedback);
-    }
-
-    [HttpGet("TestConnection")]
-    public IActionResult TestConnection()
-    {
-        return Ok("Hello from the backend!");
     }
 
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFeedback(string id, [FromBody] Feedback feedback)
     {
-
+        // Validate the feedback model
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        // Call the repository method to update feedback
+        // Find the existing feedback entry by ID
         var existingFeedback = await _feedbackRepository.GetByIdAsync(id);
+
+        // Return 404 if feedback is not found
         if (existingFeedback == null)
         {
             return NotFound($"Feedback with ID {id} not found");
         }
 
+        // Update the feedback entry
         feedback.Id = id;
         await _feedbackRepository.UpdateAsync(id, feedback);
 
-        //204 response
+        // Return 204 No Content on success
         return NoContent();
     }
-
-
 }

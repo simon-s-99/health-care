@@ -27,7 +27,7 @@ namespace HealthCareABApi.Tests.FeedbackTests
         [Fact]
         public async Task GetAllFeedback_ReturnsOkResult_WithListOfFeedback()
         {
-            // Arrange: Sets up the repository to return a list of feedback
+            // Arrange
             var feedbackList = new List<Feedback>
             {
                 new Feedback { Id = "1", Comment = "Great service!" },
@@ -35,14 +35,15 @@ namespace HealthCareABApi.Tests.FeedbackTests
             };
             _mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(feedbackList);
 
-            // Act: Calls the controller's GetAllFeedback method
-            var result = await _controller.GetAllFeedback();
+            // Act
+            var result = await _controller.GetFeedback();
 
-            // Assert: Checks if the response is "Ok" and contains the correct data
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedList = Assert.IsType<List<Feedback>>(okResult.Value);
-            Assert.Equal(2, returnedList.Count); // Confirms two feedback items were returned
+            var returnedList = Assert.IsType<List<Feedback>>(okResult.Value); // Check for List<Feedback>
+            Assert.Equal(2, returnedList.Count); // Verify the count
         }
+
 
 
         [Fact]
@@ -51,7 +52,7 @@ namespace HealthCareABApi.Tests.FeedbackTests
   
             _mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Feedback>());
 
-            var result = await _controller.GetAllFeedback();
+            var result = await _controller.GetFeedback();
 
             // Assert: Checks if the response is "Ok" and contains an empty list
             var okResult = Assert.IsType<OkObjectResult>(result);
