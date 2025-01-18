@@ -1,0 +1,21 @@
+meta {
+  name: editAppointment
+  type: http
+  seq: 5
+}
+
+patch {
+  url: http://localhost:5148/api/appointment?id=67865f3af854e308a3e62f4d
+  body: json
+  auth: none
+}
+
+params:query {
+  id: 67865f3af854e308a3e62f4d
+}
+
+body:json {
+  {
+    "status": 2
+  }
+}

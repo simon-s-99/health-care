@@ -1,0 +1,19 @@
+meta {
+  name: registerUser
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5148/api/auth/check
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "username",
+    "password": "passord",
+    "roles": ["Admin"]
+  }
+}
