@@ -32,24 +32,25 @@ namespace HealthCareABApi.Services
                 throw new KeyNotFoundException("User(s) not found.");
             }
 
-            bool caregiverIsAvailable = await _availabilityService.GetAvailabilityStatusByCaregiverIdAndDateAsync(dto.CaregiverId, dto.DateTime);
-
-            if (!caregiverIsAvailable)
-            {
-                throw new BadHttpRequestException("Caregiver is not available.");
-
-            }
+            var availability = await _availabilityService.GetAvailabilityStatusByCaregiverIdAndDateAsync(dto.CaregiverId, dto.DateTime) ?? throw new BadHttpRequestException("Caregiver is not available.");
 
             Appointment appointment = new Appointment
             {
                 CaregiverId = dto.CaregiverId,
                 PatientId = dto.PatientId,
-                DateTime = dto.DateTime,
+                DateTime = dto.DateTime.ToUniversalTime(),
                 Status = dto.Status,
             };
 
             await _appointments.InsertOneAsync(appointment);
-        }
+
+            UpdateAvailabilityDTO updatedAvailability = new UpdateAvailabilityDTO
+            {
+                AvailableSlots = availability.AvailableSlots
+            };
+
+            await _availabilityService.UpdateAvailabilityByIdAsync(availability.Id, updatedAvailability);
+        }   
 
         public async Task<Appointment> GetAppointmentByIdAsync(string id)
         {
