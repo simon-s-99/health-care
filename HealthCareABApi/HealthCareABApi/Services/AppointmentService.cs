@@ -48,6 +48,7 @@ namespace HealthCareABApi.Services
             {
                 AvailableSlots = availability.AvailableSlots
             };
+            updatedAvailability.AvailableSlots.Remove(dto.DateTime);
 
             await _availabilityService.UpdateAvailabilityByIdAsync(availability.Id, updatedAvailability);
         }   
