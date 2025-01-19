@@ -151,11 +151,17 @@ namespace HealthCareABApi.Controllers
                             .Select(c => c.Value)
                             .ToList();
 
+            var userId = User.Claims
+                            .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                            .Select(c => c.Value)
+                            .FirstOrDefault();
+
             /// Return an authentication status with username and roles.
             return Ok(new
             {
                 message = "Authenticated",
                 username = username,
+                userId = userId,
                 roles = roles
             });
         }
