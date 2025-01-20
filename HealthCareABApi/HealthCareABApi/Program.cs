@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Implementations;
+using HealthCareABApi.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,8 +26,9 @@ if (builder.Environment.IsDevelopment())
 //    );
 //}
 
+
 // Register MongoDB context
-builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
+builder.Services.AddScoped<IMongoDbContext, MongoDbContext>();
 
 // Register repositories
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
@@ -34,8 +36,9 @@ builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 // Register custom services
-builder.Services.AddSingleton<UserService>();
-builder.Services.AddSingleton<JwtTokenService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 //builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
 
 

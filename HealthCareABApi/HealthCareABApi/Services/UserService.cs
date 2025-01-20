@@ -2,6 +2,10 @@ using HealthCareABApi.Configurations;
 using HealthCareABApi.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System.Text;
+using System.Security.Cryptography;
+using HealthCareABApi.DTO;
+using HealthCareABApi.Repositories.Interfaces;
 
 namespace HealthCareABApi.Services
 {
@@ -22,6 +26,11 @@ namespace HealthCareABApi.Services
             return await _users.Find(u => u.Username == username).AnyAsync();
         }
 
+        public async Task<bool> ExistsByIdAsync(string id)
+        {
+            return await _users.Find(u => u.Id == id).AnyAsync();
+        }
+
         public async Task<bool> ExistsByEmailAsync(string email)
         {
             return await _users.Find(u => u.Email == email).AnyAsync();
@@ -35,6 +44,11 @@ namespace HealthCareABApi.Services
         public async Task<User> GetUserByUsernameAsync(string username)
         {
             return await _users.Find(u => u.Username == username).FirstOrDefaultAsync();
+        }
+
+        public async Task<User> GetUserByIdAsync(string id)
+        {
+            return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task CreateUserAsync(User user)
@@ -58,5 +72,4 @@ namespace HealthCareABApi.Services
             return BCrypt.Net.BCrypt.Verify(enteredPassword, storedHash);
         }
     }
-
 }
