@@ -1,4 +1,3 @@
-﻿using System;
 using HealthCareABApi.Models;
 using MongoDB.Driver;
 
@@ -11,8 +10,8 @@ namespace HealthCareABApi.Repositories.Implementations
         public MongoDbContext(IConfiguration configuration)
         {
             // Access the MongoDB connection string and database name
-            var connectionString = configuration["MongoDbSettings:ConnectionString"];
-            var databaseName = configuration["MongoDbSettings:DatabaseName"];
+            var connectionString = configuration["MONGODB:ConnectionString"];
+            var databaseName = configuration["MONGODB:DatabaseName"];
 
             // Log the values for debugging (optional)
             Console.WriteLine($"Connection String: {connectionString}");
