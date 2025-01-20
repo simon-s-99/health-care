@@ -10,9 +10,9 @@ updates:
     schedule:
       interval: "daily"
     groups:
-    dependencies:
-      patterns:
-        - "*"
+      dependencies:
+        patterns:
+          - "*"
     reviewers:
       - "simon-s-99"
       - "Samuel-Loof"
