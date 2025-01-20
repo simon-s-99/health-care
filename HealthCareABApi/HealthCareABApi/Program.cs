@@ -3,6 +3,7 @@ using HealthCareABApi.Configurations;
 using HealthCareABApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Implementations;
 using HealthCareABApi.Repositories.Interfaces;
@@ -28,7 +29,7 @@ else
 
 
 // Register MongoDB context
-builder.Services.AddScoped<IMongoDbContext, MongoDbContext>();
+builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
 
 // Register repositories
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
@@ -36,10 +37,10 @@ builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 // Register custom services
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<JwtTokenService>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
+builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<JwtTokenService>();
+builder.Services.AddSingleton<IAppointmentService, AppointmentService>();
+builder.Services.AddSingleton<IAvailabilityService, AvailabilityService>();
 
 
 
@@ -124,10 +125,8 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         // This ensures that the token was signed by a trusted source and has not been tampered with.
         ValidateIssuerSigningKey = true,
-#pragma warning disable CS8604 // Possible null reference argument.
         // The key is created using the "Secret" value from the "JwtSettings" configuration, encoded in UTF-8.
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"])),
-#pragma warning restore CS8604 // Possible null reference argument.
         // This ensures that expired tokens will be rejected.
         ValidateLifetime = true,
         // By default, a small amount of clock skew is allowed to account for minor time differences between systems.

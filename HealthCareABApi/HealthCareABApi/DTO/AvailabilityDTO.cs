@@ -1,12 +1,10 @@
+﻿using System;
 namespace HealthCareABApi.DTO
 {
     public class AvailabilityDTO
     {
-        public AvailabilityDTO(List<DateTime> availableSlots)
-        {
-            AvailableSlots = availableSlots;
-        }
-
-        private List<DateTime> AvailableSlots { get; set; }
+        public List<DateTime> AvailableSlots { get; set; }
     }
+
 }
+
