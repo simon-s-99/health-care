@@ -28,6 +28,8 @@ namespace HealthCareABApi.Models
 
                 [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
                 public int Rating { get; set; }
+
+                public DateTime CreationDate { get; set; }
         }
 }
 
