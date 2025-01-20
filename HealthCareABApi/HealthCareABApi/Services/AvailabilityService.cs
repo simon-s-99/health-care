@@ -75,11 +75,11 @@ namespace HealthCareABApi.Services
 
             if (dateTime is not null)
             {
-                availability = await _availabilities.Find(a => a.CaregiverId == caregiverId && a.AvailableSlots.Contains((DateTime)dateTime)).FirstOrDefaultAsync();
+                availability = await _availabilityRepository.GetByCaregiverIdAndDate(caregiverId, (DateTime)dateTime);
             }
             else
             {
-                availability = await _availabilities.Find(a => a.CaregiverId == caregiverId).FirstOrDefaultAsync();
+                availability = await _availabilityRepository.GetByCaregiverIdAsync(caregiverId);
             }
 
             return availability;
@@ -130,7 +130,7 @@ namespace HealthCareABApi.Services
             // Define update to be made
             var update = Builders<Availability>.Update.Set("AvailableSlots", dtoWithoutDuplicates);
 
-            await _availabilities.UpdateOneAsync(filter, update);
+            await _availabilityRepository.UpdateAsync(filter, update);
         }
     }
 }

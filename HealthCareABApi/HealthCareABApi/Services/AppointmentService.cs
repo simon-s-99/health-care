@@ -12,11 +12,13 @@ namespace HealthCareABApi.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IAvailabilityService _availabilityService;
         private readonly UserService _userService;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, UserService userService)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IAvailabilityService availabilityService, UserService userService)
         {
             _appointmentRepository = appointmentRepository;
+            _availabilityService = availabilityService;
             _userService = userService;
         }
 
@@ -39,7 +41,7 @@ namespace HealthCareABApi.Services
                 Status = dto.Status,
             };
 
-            await _appointments.InsertOneAsync(appointment);
+            await _appointmentRepository.CreateAsync(appointment);
 
             UpdateAvailabilityDTO updatedAvailability = new UpdateAvailabilityDTO
             {
@@ -49,12 +51,6 @@ namespace HealthCareABApi.Services
 
             await _availabilityService.UpdateAvailabilityByIdAsync(availability.Id, updatedAvailability);
         }   
-
-        public async Task<Appointment> GetAppointmentByIdAsync(string id)
-        {
-            var appointment = await _appointments.Find(u => u.Id == id).FirstOrDefaultAsync();
-            return appointment;
-        }
 
         public async Task<List<Appointment>> GetAllAppointmentsByUserIdAsync(string id, DateTime? date, bool isPatient)
         {

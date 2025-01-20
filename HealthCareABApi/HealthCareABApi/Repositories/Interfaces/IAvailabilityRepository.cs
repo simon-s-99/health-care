@@ -1,5 +1,6 @@
 ﻿using System;
 using HealthCareABApi.Models;
+using MongoDB.Driver;
 
 namespace HealthCareABApi.Repositories
 {
@@ -8,9 +9,10 @@ namespace HealthCareABApi.Repositories
         Task<List<Availability>> GetAllAsync();
         Task<Availability> GetByIdAsync(string id);
         Task CreateAsync(Availability availability);
-        Task UpdateAsync(string id, Availability availability);
+        Task UpdateAsync(FilterDefinition<Availability> filter, UpdateDefinition<Availability> update);
         Task DeleteAsync(string id);
-        Task<List<Availability>> GetByCaregiverIdAsync(string caregiverId);
+        Task<Availability> GetByCaregiverIdAsync(string caregiverId);
+        Task<Availability> GetByCaregiverIdAndDate(string caregiverId, DateTime dateTime);
 
     }
 }
