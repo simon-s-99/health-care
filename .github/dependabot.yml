@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/HealthCareABApi/HealthCareABApi/HealthCareABApi.csproj" # Location of package manifests
+    directory: "/HealthCareABApi/" # Location of package manifests
     schedule:
       interval: "daily"
     groups:
