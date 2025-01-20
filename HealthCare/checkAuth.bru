@@ -1,0 +1,15 @@
+meta {
+  name: checkAuth
+  type: http
+  seq: 11
+}
+
+get {
+  url: http://localhost:5148/api/auth/check
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiU2F1bCIsImp0aSI6IjY3MjBhODIzLWYzY2UtNDJmMC1hNmZiLTJmMTA1MjJmMTlkYSIsInN1YiI6IjY3OGMyNTkzNDUwMDlkMjllZjgzYzBmZSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3MzcyOTYxMjMsImlzcyI6IllvdXJJc3N1ZXIiLCJhdWQiOiJZb3VyQXVkaWVuY2UifQ.AsAovFz5n3_0SFIkOVXwhZ2iu8wo1EvcmasxejbtoDE
+}
