@@ -19,10 +19,18 @@ public class FeedbackController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetFeedback([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
     {
+        // Fetch all feedback
         var feedbackList = await _feedbackRepository.GetAllAsync();
-        var paginatedList = feedbackList.Skip((page - 1) * pageSize).Take(pageSize).ToList(); // Convert to List
+
+        // Sort the feedback by CreationDate in descending order (newest first)
+        var sortedList = feedbackList.OrderByDescending(f => f.CreationDate).ToList();
+
+        // Paginate the sorted list
+        var paginatedList = sortedList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
         return Ok(paginatedList);
     }
+
 
 
 
