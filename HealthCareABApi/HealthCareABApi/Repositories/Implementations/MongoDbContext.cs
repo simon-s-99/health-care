@@ -1,4 +1,3 @@
-﻿using System;
 using HealthCareABApi.Models;
 using MongoDB.Driver;
 

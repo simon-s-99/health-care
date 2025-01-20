@@ -3,7 +3,6 @@ using HealthCareABApi.Configurations;
 using HealthCareABApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Implementations;
 using HealthCareABApi.Repositories.Interfaces;
@@ -125,8 +124,10 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         // This ensures that the token was signed by a trusted source and has not been tampered with.
         ValidateIssuerSigningKey = true,
+#pragma warning disable CS8604 // Possible null reference argument.
         // The key is created using the "Secret" value from the "JwtSettings" configuration, encoded in UTF-8.
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"])),
+#pragma warning restore CS8604 // Possible null reference argument.
         // This ensures that expired tokens will be rejected.
         ValidateLifetime = true,
         // By default, a small amount of clock skew is allowed to account for minor time differences between systems.
