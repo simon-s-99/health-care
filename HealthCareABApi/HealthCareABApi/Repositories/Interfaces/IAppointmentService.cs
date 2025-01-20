@@ -7,8 +7,8 @@ namespace HealthCareABApi.Repositories.Interfaces
     public interface IAppointmentService
     {
         Task CreateAppointmentAsync(CreateAppointmentDTO dto);
-        Task<Appointment> GetAppointmentByIdAsync(string id);
         Task UpdateAppointmentByIdAsync(string id, UpdateAppointmentDTO dto);
+        Task<Appointment> GetAppointmentByIdAsync(string id);
         Task DeleteAppointmentByIdAsync(string id);
         Task<List<Appointment>> GetAllAppointmentsByUserIdAsync([FromQuery] string id, [FromQuery] bool isPatient);
     }
