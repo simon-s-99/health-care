@@ -1,6 +1,7 @@
 ﻿using HealthCareABApi.Configurations;
 using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
+using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -10,14 +11,12 @@ namespace HealthCareABApi.Services
 {
     public class AvailabilityService : IAvailabilityService
     {
-        private readonly IMongoCollection<Availability> _availabilities;
+        private readonly IAvailabilityRepository _availabilityRepository;
         private readonly UserService _userService;
 
-        public AvailabilityService(IOptions<MongoDBSettings> mongoDBSettings, UserService userService)
+        public AvailabilityService(IAvailabilityRepository availabilityRepository, UserService userService)
         {
-            var client = new MongoClient(mongoDBSettings.Value.ConnectionString);
-            var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
-            _availabilities = database.GetCollection<Availability>("Availabilities");
+            _availabilityRepository = availabilityRepository;
             _userService = userService;
         }
 
@@ -30,9 +29,9 @@ namespace HealthCareABApi.Services
                 throw new KeyNotFoundException("User not found.");
             }
 
-            for (int i = 0; i < dto.AvailableSlots.Count; i++)
+            foreach (DateTime timeSlot in dto.AvailableSlots)
             {
-                if (dto.AvailableSlots[i] < DateTime.Now)
+                if (timeSlot < DateTime.Now)
                 {
                     throw new KeyNotFoundException("Invalid date.");
                 }
@@ -59,8 +58,7 @@ namespace HealthCareABApi.Services
                     AvailableSlots = dto.AvailableSlots,
                 };
 
-                await _availabilities.InsertOneAsync(availability);
-
+                await _availabilityRepository.CreateAsync(availability);
             }
 
         }
@@ -68,11 +66,7 @@ namespace HealthCareABApi.Services
         public async Task DeleteAvailabilityByIdAsync(string id)
         {
             var availability = await GetAvailabilityByIdAsync(id) ?? throw new KeyNotFoundException("Appointment not found.");
-
-            // Get availability by id
-            var filter = Builders<Availability>.Filter.Eq(a => a.Id, availability.Id);
-
-            await _availabilities.DeleteOneAsync(filter);
+            await _availabilityRepository.DeleteAsync(id);
         }
 
         public async Task<Availability> GetAvailabilityStatusByCaregiverIdAndDateAsync(string caregiverId, DateTime? dateTime)
@@ -94,7 +88,7 @@ namespace HealthCareABApi.Services
 
         public async Task<List<Availability>> GetAllAvailabilitiesAsync()
         {
-            return await _availabilities.Find(a => true).ToListAsync();
+            return await _availabilityRepository.GetAllAsync();
         }
 
         public async Task<List<Availability>> GetAllAvailabilitiesByDateAsync(DateTime date)
@@ -118,7 +112,7 @@ namespace HealthCareABApi.Services
 
         public async Task<Availability> GetAvailabilityByIdAsync(string id)
         {
-            var appointment = await _availabilities.Find(u => u.Id == id).FirstOrDefaultAsync();
+            var appointment = await _availabilityRepository.GetByIdAsync(id);
             return appointment;
         }
 
