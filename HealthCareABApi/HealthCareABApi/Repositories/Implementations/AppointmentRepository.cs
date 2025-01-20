@@ -22,14 +22,24 @@ namespace HealthCareABApi.Repositories.Implementations
             return await _collection.Find(a => a.Id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<List<Appointment>> GetAllByPatientId(string id)
+        {
+            return await _collection.Find(u => u.PatientId == id).ToListAsync();
+        }
+
+        public async Task<List<Appointment>> GetAllByCaregiverId(string id)
+        {
+            return await _collection.Find(u => u.CaregiverId == id).ToListAsync();
+        }
+
         public async Task CreateAsync(Appointment appointment)
         {
             await _collection.InsertOneAsync(appointment);
         }
 
-        public async Task UpdateAsync(string id, Appointment appointment)
+        public async Task UpdateAsync(FilterDefinition<Appointment> filter, UpdateDefinition<Appointment> update)
         {
-            await _collection.ReplaceOneAsync(a => a.Id == id, appointment);
+            await _collection.UpdateOneAsync(filter, update);
         }
 
         public async Task DeleteAsync(string id)
