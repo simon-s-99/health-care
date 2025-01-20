@@ -33,19 +33,20 @@ namespace HealthCareABApi.Services
             {
                 if (timeSlot < DateTime.Now)
                 {
-                    throw new KeyNotFoundException("Invalid date.");
+                    throw new ArithmeticException("Invalid date.");
                 }
             }
 
-            var existingAvailbility = await GetAvailabilityStatusByCaregiverIdAndDateAsync(dto.CaregiverId, null);
+            var existingAvailbility = await GetAvailabilityStatusByCaregiverIdAsync(dto.CaregiverId, null);
 
-            if (existingAvailbility is not null)
+            if (existingAvailbility is not null) // If availability already exists for user, add the new availability's slot(s) to the existing slots
             {
                 UpdateAvailabilityDTO updated = new UpdateAvailabilityDTO
                 {
-                    AvailableSlots = existingAvailbility.AvailableSlots.Concat(dto.AvailableSlots).ToList()
+                    AvailableSlots = existingAvailbility.AvailableSlots.Concat(dto.AvailableSlots).ToList() // Add the slots to the existing slots
                 };
-                var availableSlotsWithoutDuplicates = updated.AvailableSlots.Distinct().ToList();
+
+                var availableSlotsWithoutDuplicates = updated.AvailableSlots.Distinct().ToList(); // Remove all duplicates
                 updated.AvailableSlots = availableSlotsWithoutDuplicates;
 
                 await UpdateAvailabilityByIdAsync(existingAvailbility.Id, updated);
@@ -60,7 +61,6 @@ namespace HealthCareABApi.Services
 
                 await _availabilityRepository.CreateAsync(availability);
             }
-
         }
 
         public async Task DeleteAvailabilityByIdAsync(string id)
@@ -69,7 +69,7 @@ namespace HealthCareABApi.Services
             await _availabilityRepository.DeleteAsync(id);
         }
 
-        public async Task<Availability> GetAvailabilityStatusByCaregiverIdAndDateAsync(string caregiverId, DateTime? dateTime)
+        public async Task<Availability> GetAvailabilityStatusByCaregiverIdAsync(string caregiverId, DateTime? dateTime)
         {
             var availability = new Availability();
 
@@ -101,7 +101,7 @@ namespace HealthCareABApi.Services
             {
                 foreach (var slot in availability.AvailableSlots)
                 {
-                    if (slot.ToString().Split(" ")[0] == date.ToString().Split(" ")[0])
+                    if (slot.ToString().Split(" ")[0] == date.ToString().Split(" ")[0]) // Compare only the date part of the DateTime
                     {
                         result.Add(availability);
                     }
@@ -122,6 +122,10 @@ namespace HealthCareABApi.Services
 
             var availability = await GetAvailabilityByIdAsync(id) ?? throw new KeyNotFoundException("Availability not found.");
 
+            if (dto.AvailableSlots.Count == 0) // Remove availability if it has no available slots
+            {
+                await _availabilityRepository.DeleteAsync(id);
+            }
             var dtoWithoutDuplicates = dto.AvailableSlots.Distinct().ToList();
 
             // Get availability by id

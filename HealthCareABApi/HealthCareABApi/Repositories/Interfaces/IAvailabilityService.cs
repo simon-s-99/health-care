@@ -7,7 +7,7 @@ namespace HealthCareABApi.Repositories.Interfaces
     public interface IAvailabilityService
     {
         Task CreateAvailabilityAsync(CreateAvailabilityDTO dto);
-        Task<Availability> GetAvailabilityStatusByCaregiverIdAndDateAsync(string caregiverId, DateTime? dateTime);
+        Task<Availability> GetAvailabilityStatusByCaregiverIdAsync(string caregiverId, DateTime? dateTime);
         Task UpdateAvailabilityByIdAsync(string id, UpdateAvailabilityDTO dto);
         Task DeleteAvailabilityByIdAsync(string id);
         Task<Availability> GetAvailabilityByIdAsync(string id);
