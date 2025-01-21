@@ -18,13 +18,13 @@ if (builder.Environment.IsDevelopment())
         builder.Configuration.GetSection("MONGODB")
     );
 }
-//else
-//{
-//    // get from appsettings
-//    builder.Services.Configure<MongoDBSettings>(
-//        builder.Configuration.GetSection("MongoDBSettings")
-//    );
-//}
+else
+{
+    // get from appsettings
+    builder.Services.Configure<MongoDBSettings>(
+        builder.Configuration.GetSection("MongoDBSettings")
+    );
+}
 
 
 // Register MongoDB context

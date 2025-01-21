@@ -23,17 +23,33 @@ public class FeedbackController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetFeedback([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
     {
-        // Fetch all feedback
-        var feedbackList = await _feedbackRepository.GetAllAsync();
+        if (page <= 0 || pageSize <= 0)
+        {
+            return BadRequest("Page and PageSize must be greater than zero.");
+        }
 
-        // Sort the feedback by CreationDate in descending order (newest first)
-        var sortedList = feedbackList.OrderByDescending(f => f.CreationDate).ToList();
+        try
+        {
+            // Fetch paginated feedback directly from the repository.
 
-        // Paginate the sorted list
-        var paginatedList = sortedList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            // Fetch feedback from the database in small chunks (pages) instead of all at once.
+            // This prevents the system from running out of memory when the number of feedbacks grows.
+            var paginatedFeedback = await _feedbackRepository.GetPaginatedFeedbackAsync(page, pageSize);
 
-        return Ok(paginatedList);
+            if (!paginatedFeedback.Any())
+            {
+                return Ok("No feedback available.");
+            }
+
+            return Ok(paginatedFeedback);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching feedback: {ex.Message}");
+            return StatusCode(500, "An error occurred while fetching feedback.");
+        }
     }
+
 
 
     [HttpGet("{id}")]
@@ -93,13 +109,11 @@ public class FeedbackController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        // Find the existing feedback entry by ID
-        var existingFeedback = await _feedbackRepository.GetByIdAsync(id);
-
-        // Return 404 if feedback is not found
-        if (existingFeedback == null)
+        // Reuse the existing `GetFeedbackById` method to fetch feedback
+        var getFeedbackResult = await GetFeedbackById(id);
+        if (getFeedbackResult is NotFoundObjectResult)
         {
-            return NotFound($"Feedback with ID {id} not found");
+            return getFeedbackResult;
         }
 
         // Update the feedback entry
