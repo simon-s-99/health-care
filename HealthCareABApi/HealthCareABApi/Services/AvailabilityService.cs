@@ -83,7 +83,6 @@ namespace HealthCareABApi.Services
             }
 
             return availability;
-
         }
 
         public async Task<List<Availability>> GetAllAvailabilitiesAsync()

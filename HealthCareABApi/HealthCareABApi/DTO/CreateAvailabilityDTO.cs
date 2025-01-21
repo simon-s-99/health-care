@@ -8,8 +8,8 @@ namespace HealthCareABApi.DTO
             CaregiverId = caregiverId;
             AvailableSlots = availableSlots;
         }
-        private string CaregiverId { get; set; }
-        private List<DateTime> AvailableSlots { get; set; }
+        public string CaregiverId { get; private set; }
+        public List<DateTime> AvailableSlots { get; private set; }
 
     }
 }
