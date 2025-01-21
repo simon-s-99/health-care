@@ -1,8 +1,9 @@
 ﻿using HealthCareABApi.Models; 
-using HealthCareABApi.Repositories; 
+using HealthCareABApi.Repositories;
 using Microsoft.AspNetCore.Mvc; 
 using Moq; // library to simulate (mock) the behavior of objects like the repository
-using Xunit; 
+using Xunit;
+using HealthCareABApi.Repositories.Interfaces;
 
 
 namespace HealthCareABApi.Tests.FeedbackTests
@@ -13,15 +14,16 @@ namespace HealthCareABApi.Tests.FeedbackTests
     public class FeedbackControllerTests
     {
         private readonly Mock<IFeedbackRepository> _mockRepo; // Simulates the repository
+        private readonly Mock<IAppointmentService> _mockAppointmentService;
         private readonly FeedbackController _controller; // The controller being tested
 
         public FeedbackControllerTests()
         {
-            // Creates a mock object for the feedback repository
             _mockRepo = new Mock<IFeedbackRepository>();
+            _mockAppointmentService = new Mock<IAppointmentService>();
 
-            // Passes the mock repository to the controller
-            _controller = new FeedbackController(_mockRepo.Object);
+            // Pass both mocks to the controller
+            _controller = new FeedbackController(_mockRepo.Object, _mockAppointmentService.Object);
         }
 
         [Fact]
@@ -94,15 +96,40 @@ namespace HealthCareABApi.Tests.FeedbackTests
         [Fact]
         public async Task CreateFeedback_ReturnsCreatedAtAction_WithValidFeedback()
         {
-            // Arrange: Sets up a valid feedback object
-            var feedback = new Feedback { Id = "1", Comment = "Great service!" };
+            // Arrange: Set up a valid feedback object and a matching appointment
+            var feedback = new Feedback
+            {
+                Id = "1",
+                Comment = "Great service!",
+                AppointmentId = "123",
+                PatientId = "456",
+                Rating = 5
+            };
 
-            // Act: Calls the controller's CreateFeedback method
+            var validAppointment = new Appointment
+            {
+                Id = "123",
+                PatientId = "456",
+                CaregiverId = "789",
+                DateTime = DateTime.UtcNow,
+                Status = AppointmentStatus.Completed
+            };
+
+            _mockAppointmentService
+                .Setup(service => service.GetAppointmentByIdAsync(feedback.AppointmentId))
+                .ReturnsAsync(validAppointment); // Simulate a valid appointment
+
+            _mockRepo
+                .Setup(repo => repo.CreateAsync(feedback))
+                .Returns(Task.CompletedTask); // Simulate feedback creation
+
+            // Act: Call the controller's CreateFeedback method
             var result = await _controller.CreateFeedback(feedback);
 
+            // Assert: Ensure the result is a CreatedAtActionResult with correct feedback
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             var returnedFeedback = Assert.IsType<Feedback>(createdResult.Value);
-            Assert.Equal("Great service!", returnedFeedback.Comment); 
+            Assert.Equal(feedback.Comment, returnedFeedback.Comment);
         }
 
 

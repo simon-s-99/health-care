@@ -2,17 +2,21 @@ using HealthCareABApi.Models;
 using HealthCareABApi.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HealthCareABApi.Services;
+using HealthCareABApi.Repositories.Interfaces;
 
 [ApiController]
 [Route("api/[controller]")]
 public class FeedbackController : ControllerBase
 {
     private readonly IFeedbackRepository _feedbackRepository;
+    private readonly IAppointmentService _appointmentService;
 
     // Constructor to inject the feedback repository
-    public FeedbackController(IFeedbackRepository feedbackRepository)
+    public FeedbackController(IFeedbackRepository feedbackRepository, IAppointmentService appointmentService)
     {
         _feedbackRepository = feedbackRepository;
+        _appointmentService = appointmentService;       
     }
 
 
@@ -30,8 +34,6 @@ public class FeedbackController : ControllerBase
 
         return Ok(paginatedList);
     }
-
-
 
 
     [HttpGet("{id}")]
@@ -59,6 +61,20 @@ public class FeedbackController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+
+        var appointment = await _appointmentService.GetAppointmentByIdAsync(feedback.AppointmentId);
+
+        if (appointment == null)
+        {
+            Console.WriteLine($"Appointment not found for Id: {feedback.AppointmentId}");
+            return BadRequest("Invalid AppointmentId.");
+        }
+        if (appointment.PatientId != feedback.PatientId)
+        {
+            Console.WriteLine($"Mismatch PatientId: Appointment PatientId: {appointment.PatientId}, Feedback PatientId: {feedback.PatientId}");
+            return BadRequest("Invalid PatientId.");
+        }
+
 
         // Save the feedback to the database using the repository
         await _feedbackRepository.CreateAsync(feedback);
