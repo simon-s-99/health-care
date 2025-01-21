@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace HealthCareABApi.DTO
 {
-    public class LoginDto
+    public class LoginDTO
     {
         public required string Username { get; set; }
 

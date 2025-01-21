@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using HealthCareABApi.Configurations;
-using HealthCareABApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Implementations;
 using HealthCareABApi.Repositories.Interfaces;
+using HealthCareABApi.Services.Implementations;
+using HealthCareABApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

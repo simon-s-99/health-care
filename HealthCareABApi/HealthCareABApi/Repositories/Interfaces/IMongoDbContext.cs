@@ -1,7 +1,7 @@
 using HealthCareABApi.Models;
 using MongoDB.Driver;
 
-namespace HealthCareABApi.Repositories
+namespace HealthCareABApi.Repositories.Interfaces
 {
     public interface IMongoDbContext
     {

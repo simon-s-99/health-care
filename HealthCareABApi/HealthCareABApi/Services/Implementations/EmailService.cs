@@ -6,7 +6,7 @@
 
 using Email.Net;
 
-namespace HealthCareABApi.Services
+namespace HealthCareABApi.Services.Implementations
 {
     public class EmailService
     {

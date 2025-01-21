@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
-using HealthCareABApi.Services;
+using HealthCareABApi.Services.Implementations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +21,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO request)
         {
             // Check if username already exists
             if (await _userService.ExistsByUsernameAsync(request.Username))
@@ -69,7 +69,7 @@ namespace HealthCareABApi.Controllers
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto request)
+        public async Task<IActionResult> Login([FromBody] LoginDTO request)
         {
             try
             {

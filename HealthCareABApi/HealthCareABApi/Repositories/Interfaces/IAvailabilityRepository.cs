@@ -1,6 +1,6 @@
 using HealthCareABApi.Models;
 
-namespace HealthCareABApi.Repositories
+namespace HealthCareABApi.Repositories.Interfaces
 {
     public interface IAvailabilityRepository
     {

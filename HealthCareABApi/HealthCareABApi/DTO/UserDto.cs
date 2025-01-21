@@ -1,8 +1,8 @@
 namespace HealthCareABApi.DTO
 {
-    public class UserDto
+    public class UserDTO
     {
-        public UserDto(string username, List<string> roles)
+        public UserDTO(string username, List<string> roles)
         {
             Username = username;
             Roles = roles;
