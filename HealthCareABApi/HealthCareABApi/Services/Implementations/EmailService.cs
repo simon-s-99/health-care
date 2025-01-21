@@ -5,6 +5,7 @@
  */
 
 using Email.Net;
+using HealthCareABApi.Models;
 using HealthCareABApi.Services.Interfaces;
 
 namespace HealthCareABApi.Services.Implementations
@@ -41,26 +42,67 @@ namespace HealthCareABApi.Services.Implementations
             return message;
         }
 
-        public async Task<IResult> SendAppointmentEmail(string userId, string emailMessage)
+        public async Task<EmailSendingResult> SendEmail(Appointment appointment, string emailSubject, string emailMessage)
         {
-            var user = await _userService.GetUserByIdAsync(userId);
+            var user = await _userService.GetUserByIdAsync(appointment.PatientId);
 
-            throw new NotImplementedException();
+            if (user is not null)
+            {
+                string recipientEmail = user.Email;
+                EmailMessage emailToBeSent = ComposeEmail(recipientEmail, emailSubject, emailMessage);
+                return await _emailService.SendAsync(emailToBeSent);
+            }
+            else
+            {   // If user is null throw exception, KeyNotFound was the best i could find
+                throw new KeyNotFoundException("User not found in DB, check userId.");
+            }
         }
 
-        public async Task<IResult> SendConfirmedAppointmentEmail(string userId, string emailMessage)
+        public async Task<EmailSendingResult> SendConfirmedAppointmentEmail(Appointment appointment)
         {
-            throw new NotImplementedException();
+            string emailSubject = "Your appointment has been confirmed!";
+            string emailMessage = "";
+
+            return await SendEmail(appointment, emailSubject, emailMessage);
         }
 
-        public async Task<IResult> SendChangedAppointmentEmail(string userId, string emailMessage)
+        public async Task<EmailSendingResult> SendChangedAppointmentEmail(Appointment appointment)
         {
-            throw new NotImplementedException();
+            // TODO: implement sending of e-mails when an appointment is scheduled but
+            //          the date or doctor (or any other details) have been modified.
+
+            string emailSubject = "Your appointment has been changed!";
+            string emailMessage = "";
+
+            return await SendEmail(appointment, emailSubject, emailMessage);
         }
 
-        public async Task<IResult> SendCanceledAppointmentEmail(string userId, string emailMessage)
+        public async Task<EmailSendingResult> SendCanceledAppointmentEmail(Appointment appointment)
         {
-            throw new NotImplementedException();
+            string emailSubject = "Your appointment has been canceled.";
+            string emailMessage = "";
+
+            return await SendEmail(appointment, emailSubject, emailMessage);
+        }
+
+        public Task<EmailSendingResult> SendAppointmentEmail(Appointment appointment)
+        {
+            if (appointment.Status == AppointmentStatus.Scheduled)
+            {
+                return SendConfirmedAppointmentEmail(appointment);
+
+                // TODO: implement sending of e-mails when an appointment is scheduled but
+                //          the date or doctor (or any other details) have been modified.
+                // return SendChangedAppointmentEmail(appointment);
+            }
+            else if (appointment.Status == AppointmentStatus.Cancelled)
+            {
+                return SendCanceledAppointmentEmail(appointment);
+            }
+            else
+            {   // if appointment status == 'None'
+                throw new ArgumentException("Appointment with invalid AppointmentStatus passed.", nameof(appointment));
+            }
         }
     }
 }
