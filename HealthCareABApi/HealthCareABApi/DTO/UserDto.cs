@@ -1,5 +1,4 @@
-﻿using System;
-namespace HealthCareABApi.DTO
+﻿namespace HealthCareABApi.DTO
 {
     public class UserDto
     {
@@ -10,6 +9,7 @@ namespace HealthCareABApi.DTO
         }
 
         private string Username { get; set; }
+
         private List<string> Roles { get; set; }
     }
 }

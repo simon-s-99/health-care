@@ -1,5 +1,4 @@
-﻿using System;
-using HealthCareABApi.Models;
+﻿using HealthCareABApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

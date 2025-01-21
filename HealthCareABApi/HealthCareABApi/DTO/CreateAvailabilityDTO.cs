@@ -1,5 +1,4 @@
-﻿using System;
-namespace HealthCareABApi.DTO
+﻿namespace HealthCareABApi.DTO
 {
     public class CreateAvailabilityDTO
     {
@@ -8,9 +7,10 @@ namespace HealthCareABApi.DTO
             CaregiverId = caregiverId;
             AvailableSlots = availableSlots;
         }
-        public string CaregiverId { get; private set; }
-        public List<DateTime> AvailableSlots { get; private set; }
 
+        private string CaregiverId { get; set; }
+
+        private List<DateTime> AvailableSlots { get; set; }
     }
 }
 

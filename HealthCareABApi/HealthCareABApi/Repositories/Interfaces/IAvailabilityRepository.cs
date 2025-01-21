@@ -1,6 +1,5 @@
-﻿using System;
-using HealthCareABApi.Models;
 using MongoDB.Driver;
+using HealthCareABApi.Models;
 
 namespace HealthCareABApi.Repositories
 {
