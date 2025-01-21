@@ -71,18 +71,14 @@ namespace HealthCareABApi.Services
 
         public async Task<Availability> GetAvailabilityStatusByCaregiverIdAsync(string caregiverId, DateTime? dateTime)
         {
-            var availability = new Availability();
-
             if (dateTime is not null)
             {
-                availability = await _availabilityRepository.GetByCaregiverIdAndDate(caregiverId, (DateTime)dateTime);
+                return await _availabilityRepository.GetByCaregiverIdAndDate(caregiverId, (DateTime)dateTime);
             }
             else
             {
-                availability = await _availabilityRepository.GetByCaregiverIdAsync(caregiverId);
+                return await _availabilityRepository.GetByCaregiverIdAsync(caregiverId);
             }
-
-            return availability;
         }
 
         public async Task<List<Availability>> GetAllAvailabilitiesAsync()

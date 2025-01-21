@@ -8,9 +8,9 @@
             AvailableSlots = availableSlots;
         }
 
-        private string CaregiverId { get; set; }
+        public string CaregiverId { get; private set; }
 
-        private List<DateTime> AvailableSlots { get; set; }
+        public List<DateTime> AvailableSlots { get; private set; }
     }
 }
 
