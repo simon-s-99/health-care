@@ -1,12 +1,16 @@
 ﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using HealthCareABApi.Services;
 
 namespace HealthCareABApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
@@ -35,16 +39,19 @@ namespace HealthCareABApi.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("id")]
         public async Task<IActionResult> GetAppointmentById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return BadRequest("Invalid id.");
+                return BadRequest("Invalid appointmend id.");
             }
 
             try
             {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;  // Logged-in user's ID
+                var roles = User.FindFirst(ClaimTypes.Role)?.Value; // Logged-in user's roles
+
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
 
                 if (appointment is null)
@@ -52,7 +59,15 @@ namespace HealthCareABApi.Controllers
                     return NotFound();
                 }
 
+                if (roles?.Contains(Roles.User) == true && appointment.PatientId != userId ||
+                     roles?.Contains(Roles.Admin) == true && appointment.CaregiverId != userId)
+                {
+                    return Forbid("You do not have access to this appointment.");
+                }
+
+
                 return Ok(appointment);
+
             }
             catch (Exception ex)
             {
