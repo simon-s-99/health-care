@@ -30,18 +30,14 @@ public class FeedbackController : ControllerBase
 
         try
         {
-            // Fetch paginated feedback directly from the repository.
 
-            // Fetch feedback from the database in small chunks (pages) instead of all at once.
+            // Fetch feedback from the database in small chunks (pages) from the repository instead of all at once.
             // This prevents the system from running out of memory when the number of feedbacks grows.
             var paginatedFeedback = await _feedbackRepository.GetPaginatedFeedbackAsync(page, pageSize);
 
-            if (!paginatedFeedback.Any())
-            {
-                return Ok("No feedback available.");
-            }
-
-            return Ok(paginatedFeedback);
+            var feedbackList = paginatedFeedback.ToList();
+            
+            return Ok(feedbackList);
         }
         catch (Exception ex)
         {

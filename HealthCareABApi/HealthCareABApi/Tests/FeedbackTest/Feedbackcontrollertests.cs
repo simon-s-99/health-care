@@ -1,6 +1,6 @@
-﻿using HealthCareABApi.Models; 
+﻿using HealthCareABApi.Models;
 using HealthCareABApi.Repositories;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
 using Moq; // library to simulate (mock) the behavior of objects like the repository
 using Xunit;
 using HealthCareABApi.Repositories.Interfaces;
@@ -31,36 +31,38 @@ namespace HealthCareABApi.Tests.FeedbackTests
         {
             // Arrange
             var feedbackList = new List<Feedback>
-            {
-                new Feedback { Id = "1", Comment = "Great service!" },
-                new Feedback { Id = "2", Comment = "Good experience." }
-            };
-            _mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(feedbackList);
+    {
+        new Feedback { Id = "1", Comment = "Great service!" },
+        new Feedback { Id = "2", Comment = "Good experience." }
+    };
+            _mockRepo.Setup(repo => repo.GetPaginatedFeedbackAsync(It.IsAny<int>(), It.IsAny<int>()))
+                     .ReturnsAsync(feedbackList.ToArray());
 
             // Act
             var result = await _controller.GetFeedback();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedList = Assert.IsType<List<Feedback>>(okResult.Value); // Check for List<Feedback>
-            Assert.Equal(2, returnedList.Count); // Verify the count
+            var returnedList = Assert.IsType<List<Feedback>>(okResult.Value); // Expect List<Feedback>
+            Assert.Equal(2, returnedList.Count);
         }
-
-
 
         [Fact]
         public async Task GetAllFeedback_ReturnsOkResult_WithEmptyList()
         {
-  
-            _mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Feedback>());
+            // Arrange
+            _mockRepo.Setup(repo => repo.GetPaginatedFeedbackAsync(It.IsAny<int>(), It.IsAny<int>()))
+                     .ReturnsAsync(Array.Empty<Feedback>());
 
+            // Act
             var result = await _controller.GetFeedback();
 
-            // Assert: Checks if the response is "Ok" and contains an empty list
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedList = Assert.IsType<List<Feedback>>(okResult.Value);
+            var returnedList = Assert.IsType<List<Feedback>>(okResult.Value); // Expect List<Feedback>
             Assert.Empty(returnedList);
         }
+
 
 
         [Fact]
