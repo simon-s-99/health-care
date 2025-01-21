@@ -58,11 +58,11 @@ namespace HealthCareABApi.Services
 
             if (isPatient)
             {
-                appointments = await _appointmentRepository.GetAllByPatientId(id);
+                appointments = await _appointmentRepository.GetAllByPatientId(id, date ?? null);
             } 
             else
             {
-                appointments = await _appointmentRepository.GetAllByCaregiverId(id);
+                appointments = await _appointmentRepository.GetAllByCaregiverId(id, date ?? null);
             }
 
             return appointments.OrderBy(a => a.DateTime).ToList(); //Returns empty array if user is valid but no appointments are found
