@@ -5,16 +5,17 @@
  */
 
 using Email.Net;
+using HealthCareABApi.Services.Interfaces;
 
 namespace HealthCareABApi.Services.Implementations
 {
-    public class EmailService
+    public class EmailService : Interfaces.IEmailService
     {
         // DI for .AddEmailNet service
-        private readonly IEmailService _emailService;
+        private readonly Email.Net.IEmailService _emailService;
         private readonly UserService _userService;
 
-        public EmailService(IEmailService emailService, UserService userService)
+        public EmailService(Email.Net.IEmailService emailService, UserService userService)
         {
             _emailService = emailService;
             _userService = userService;
@@ -27,7 +28,7 @@ namespace HealthCareABApi.Services.Implementations
         /// <param name="emailSubject">The subject text of the e-mail</param>
         /// <param name="emailMessage">The main plain-text content of the e-mail</param>
         /// <returns>An instance of EmailMessage, ready to be sent.</returns>
-        private EmailMessage ComposeEmail(string sendTo, string emailSubject, string emailMessage)
+        public EmailMessage ComposeEmail(string sendTo, string emailSubject, string emailMessage)
         {
             var message = EmailMessage.Compose()
                 .SetCharsetTo("utf-8")
@@ -40,11 +41,26 @@ namespace HealthCareABApi.Services.Implementations
             return message;
         }
 
-        public async void SendBookedAppointmentEmail(string userId)
+        public async Task<IResult> SendAppointmentEmail(string userId, string emailMessage)
         {
             var user = await _userService.GetUserByIdAsync(userId);
 
-            //EmailMessage emailMessage = ComposeEmail(user.Email);
+            throw new NotImplementedException();
+        }
+
+        public async Task<IResult> SendConfirmedAppointmentEmail(string userId, string emailMessage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IResult> SendChangedAppointmentEmail(string userId, string emailMessage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IResult> SendCanceledAppointmentEmail(string userId, string emailMessage)
+        {
+            throw new NotImplementedException();
         }
     }
 }
