@@ -69,7 +69,7 @@ namespace HealthCareABApi.Services.Implementations
 
         public async Task<EmailSendingResult> SendUpdatedAppointmentEmail(Appointment appointment)
         {
-            string emailSubject = "Your appointment has been changed!";
+            string emailSubject = "Your appointment has been updated!";
             string emailMessage = $"Your appointment time has been changed to {appointment.DateTime.ToString()}.";
 
             return await SendEmail(appointment, emailSubject, emailMessage);
@@ -90,12 +90,15 @@ namespace HealthCareABApi.Services.Implementations
         /// <param name="updatedExistingAppointment">Whether or not the appointment passed is an existing 
         /// appointment that has been updated.</param>
         /// <returns>The EmailSendingResult for the appointment.</returns>
-        /// <exception cref="ArgumentException">If an appointment with status 'None' is passed throw ArgumentException.</exception>
+        /// <exception cref="ArgumentException">If an appointment with status 'None' is passed 
+        /// throw ArgumentException.</exception>
+        /// <exception cref="InvalidOperationException">If an appointment with invalid AppointmentStatus is passed
+        /// throw InvalidOperationException.</exception>
         public async Task<EmailSendingResult> SendAppointmentEmail(
             Appointment appointment,
-            bool? updatedExistingAppointment = false)
+            bool updatedExistingAppointment = false)
         {
-            if (updatedExistingAppointment is not null && updatedExistingAppointment == true)
+            if (updatedExistingAppointment)
             {
                 return await SendUpdatedAppointmentEmail(appointment);
             }
@@ -107,9 +110,13 @@ namespace HealthCareABApi.Services.Implementations
             {
                 return await SendCanceledAppointmentEmail(appointment);
             }
+            else if (appointment.Status == AppointmentStatus.None)
+            {
+                throw new ArgumentException("Appointment with AppointmentStatus.None passed.", nameof(appointment.Status));
+            }
             else
-            {   // if appointment status == 'None'
-                throw new ArgumentException("Appointment with invalid AppointmentStatus passed.", nameof(appointment));
+            {
+                throw new InvalidOperationException("Appointment with invalid AppointmentStatus passed.");
             }
         }
     }
