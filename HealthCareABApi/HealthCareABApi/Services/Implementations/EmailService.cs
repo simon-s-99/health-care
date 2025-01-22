@@ -87,13 +87,10 @@ namespace HealthCareABApi.Services.Implementations
         /// Send an e-mail based on the status of the Appointment instance.
         /// </summary>
         /// <param name="appointment">An instance of Appointment model.</param>
-        /// <param name="updatedExistingAppointment">Whether or not the appointment passed is an existing 
-        /// appointment that has been updated.</param>
+        /// <param name="updatedExistingAppointment">Whether or not the appointment passed is an existing appointment that has been updated.</param>
         /// <returns>The EmailSendingResult for the appointment.</returns>
-        /// <exception cref="ArgumentException">If an appointment with status 'None' is passed 
-        /// throw ArgumentException.</exception>
-        /// <exception cref="InvalidOperationException">If an appointment with invalid AppointmentStatus is passed
-        /// throw InvalidOperationException.</exception>
+        /// <exception cref="ArgumentException">If an appointment with status 'None' is passed throw ArgumentException.</exception>
+        /// <exception cref="InvalidOperationException">If an appointment with invalid AppointmentStatus is passed throw InvalidOperationException.</exception>
         public async Task<EmailSendingResult> SendAppointmentEmail(
             Appointment appointment,
             bool updatedExistingAppointment = false)
