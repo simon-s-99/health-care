@@ -39,42 +39,58 @@ namespace HealthCareABApi.Controllers
             }
         }
 
+
         [HttpGet("id")]
         public async Task<IActionResult> GetAppointmentById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return BadRequest("Invalid appointmend id.");
+                return BadRequest("Invalid appointment id.");
             }
 
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;  // Logged-in user's ID
-                var roles = User.FindFirst(ClaimTypes.Role)?.Value; // Logged-in user's roles
-
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
 
-                if (appointment is null)
+                if (appointment == null)
                 {
-                    return NotFound();
+                    return NotFound(); 
                 }
 
-                if (roles?.Contains(Roles.User) == true && appointment.PatientId != userId ||
-                     roles?.Contains(Roles.Admin) == true && appointment.CaregiverId != userId)
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var roles = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                bool isUserUnauthorized =
+                    (roles?.Contains(Roles.User) == true && appointment.PatientId != userId) ||
+                    (roles?.Contains(Roles.Admin) == true && appointment.CaregiverId != userId);
+
+                if (isUserUnauthorized)
                 {
                     return Forbid("You do not have access to this appointment.");
                 }
 
-
                 return Ok(appointment);
-
+            }
+            catch (FormatException)
+            {
+                return NotFound(); 
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"Error: {ex.Message}");
             }
         }
 
+
+
+
+        /// <summary>
+        /// Retrieves appointments for a specific user, optionally filtered by role and date.
+        /// </summary>
+        /// <param name="id">The user's ID (Patient or Caregiver).</param>
+        /// <param name="date">Optional filter for appointments on a specific date.</param>
+        /// <param name="isPatient">Whether the user is a patient (default is true).</param>
+        /// <returns>A list of appointments matching the criteria.</returns>
         [HttpGet("user/")]
         public async Task<IActionResult> GetAllAppointmentsByUserIdAsync([FromQuery] string id, [FromQuery] bool isPatient = true) // Defaults to true
         {

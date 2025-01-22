@@ -4,6 +4,7 @@ using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Security.Claims;
 using Xunit;
 
 namespace HealthCareABApi.Tests
@@ -60,5 +61,149 @@ namespace HealthCareABApi.Tests
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, badRequestResult.StatusCode);
         }
+
+
+        [Fact]
+        public async Task GetAppointmentById_ReturnsOk_WhenAppointmentExistsAndUserIsAuthorized()
+        {
+            // Arrange
+            var mockService = new Mock<IAppointmentService>();
+            var controller = new AppointmentController(mockService.Object);
+
+            var appointmentId = "678523516caf0d38580eb536";
+            var userId = "678523516caf0d38580eb537";
+            var appointment = new Appointment
+            {
+                Id = appointmentId,
+                PatientId = userId,
+                CaregiverId = "anotherCaregiverId",
+                DateTime = DateTime.Now.AddDays(14),
+                Status = AppointmentStatus.Scheduled
+            };
+
+            mockService
+                .Setup(svc => svc.GetAppointmentByIdAsync(appointmentId))
+                .ReturnsAsync(appointment);
+
+            controller.ControllerContext.HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId),
+                    new Claim(ClaimTypes.Role, Roles.User)
+                }))
+            };
+
+            // Act
+            var result = await controller.GetAppointmentById(appointmentId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedAppointment = Assert.IsType<Appointment>(okResult.Value);
+            Assert.Equal(appointmentId, returnedAppointment.Id);
+        }
+
+        [Fact]
+        public async Task GetAppointmentById_ReturnsNotFound_WhenAppointmentDoesNotExist()
+        {
+            // Arrange
+            var mockService = new Mock<IAppointmentService>();
+            var controller = new AppointmentController(mockService.Object);
+
+            var appointmentId = "nonexistentId";
+
+            mockService
+                .Setup(svc => svc.GetAppointmentByIdAsync(appointmentId))
+                .ReturnsAsync((Appointment)null);
+
+            // Act
+            var result = await controller.GetAppointmentById(appointmentId);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+        }
+
+
+        [Fact]
+        public async Task GetAppointmentById_ReturnsForbid_WhenUserIsUnauthorized()
+        {
+            // Arrange
+            var mockService = new Mock<IAppointmentService>();
+            var controller = new AppointmentController(mockService.Object);
+
+            var appointmentId = "678523516caf0d38580eb536";
+            var userId = "678523516caf0d38580eb537";
+            var appointment = new Appointment
+            {
+                Id = appointmentId,
+                PatientId = "anotherPatientId", // Different from the logged-in user
+                CaregiverId = "678523516caf0d38580eb538",
+                DateTime = DateTime.Now.AddDays(14),
+                Status = AppointmentStatus.Scheduled
+            };
+
+            mockService
+                .Setup(svc => svc.GetAppointmentByIdAsync(appointmentId))
+                .ReturnsAsync(appointment);
+
+            controller.ControllerContext.HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId),
+                    new Claim(ClaimTypes.Role, Roles.User)
+                }))
+            };
+
+            // Act
+            var result = await controller.GetAppointmentById(appointmentId);
+
+            // Assert
+            Assert.IsType<ForbidResult>(result);
+        }
+
+        [Fact]
+        public async Task GetAllAppointmentsByUserIdAsync_ReturnsOk_WithListOfAppointments()
+        {
+            // Arrange
+            var mockService = new Mock<IAppointmentService>();
+            var controller = new AppointmentController(mockService.Object);
+
+            var userId = "678523516caf0d38580eb537";
+            var appointments = new List<Appointment>
+            {
+                new Appointment
+                {
+                    Id = "1",
+                    PatientId = userId,
+                    CaregiverId = "caregiver1",
+                    DateTime = DateTime.Now.AddDays(1),
+                    Status = AppointmentStatus.Scheduled
+                },
+                new Appointment
+                {
+                    Id = "2",
+                    PatientId = userId,
+                    CaregiverId = "caregiver2",
+                    DateTime = DateTime.Now.AddDays(2),
+                    Status = AppointmentStatus.Completed
+                }
+            };
+
+            mockService
+                .Setup(svc => svc.GetAllAppointmentsByUserIdAsync(userId, true))
+                .ReturnsAsync(appointments);
+
+            // Act
+            var result = await controller.GetAllAppointmentsByUserIdAsync(userId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedAppointments = Assert.IsType<List<Appointment>>(okResult.Value);
+            Assert.Equal(2, returnedAppointments.Count);
+        }
+
+
     }
 }
