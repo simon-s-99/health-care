@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>6c636030-9bb8-49b9-9f5b-9f93434ab6fa</UserSecretsId>
+	<TargetFramework>net8.0</TargetFramework>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<UserSecretsId>6c636030-9bb8-49b9-9f5b-9f93434ab6fa</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
@@ -29,17 +29,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Configurations\" />
-    <None Remove="Models\" />
-    <None Remove="DTO\" />
-    <None Remove="Services\" />
-    <None Remove="Repositories\" />
-    <None Remove="Repositories\Interfaces\" />
-    <None Remove="Repositories\Implementations\" />
+	<None Remove="Configurations\" />
+	<None Remove="Models\" />
+	<None Remove="DTO\" />
+	<None Remove="Services\" />
+	<None Remove="Repositories\" />
+	<None Remove="Repositories\Interfaces\" />
+	<None Remove="Repositories\Implementations\" />
+
+	  <!--<Compile Remove="Tests\**" />-->
+	  <!-- Exclude all files in the Tests folder from production builds --> 
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Configurations\" />
-    <Folder Include="Models\" />
-    <Folder Include="Repositories\Implementations\" />
+	<Folder Include="Configurations\" />
+	<Folder Include="Models\" />
+	<Folder Include="DTO\" />
+	<Folder Include="Services\" />
+	<Folder Include="Repositories\" />
+	<Folder Include="Repositories\Interfaces\" />
+	<Folder Include="Repositories\Implementations\" />
   </ItemGroup>
 </Project>

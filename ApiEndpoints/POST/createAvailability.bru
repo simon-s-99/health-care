@@ -1,0 +1,18 @@
+meta {
+  name: createAvailability
+  type: http
+  seq: 10
+}
+
+post {
+  url: http://localhost:5148/api/availability
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "caregiverId": "6787d1ac02047fbc901e65fd",
+    "availableSlots": ["2025-04-01T16:00Z"]
+  }
+}

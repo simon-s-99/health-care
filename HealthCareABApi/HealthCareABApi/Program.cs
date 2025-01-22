@@ -53,7 +53,7 @@ builder.Services.AddScoped<JwtTokenService>();
 // TODO - verify that the DI is working correctly here
 builder.Services.AddScoped<HealthCareABApi.Services.Implementations.EmailService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-//builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 
 // Add controllers
 builder.Services.AddControllers();
@@ -157,7 +157,7 @@ builder.Services.AddCors(options =>
     {
 
         // Specify the allowed origins for this policy.
-        // Only requests coming from "https://localhost:7253" will be allowed.
+        // Only requests coming from "http://localhost:5173" will be allowed.
         // You can add more origins here if needed.
         policy.WithOrigins("http://localhost:5173")
               // Allow any HTTP method (e.g., GET, POST, PUT, DELETE) for cross-origin requests.

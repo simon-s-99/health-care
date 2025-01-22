@@ -1,25 +1,34 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareABApi.Models
 {
     public class Feedback
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        public string? Id { get; set; }
 
         // Reference to Appointment
         [BsonRepresentation(BsonType.ObjectId)]
-        public required string AppointmentId { get; set; }
+        [Required(ErrorMessage = "Appointment ID is required.")]
+        public string AppointmentId { get; set; }
 
         // Reference to Patient (User)
         [BsonRepresentation(BsonType.ObjectId)]
-        public required string PatientId { get; set; }
+        [Required(ErrorMessage = "Patient ID is required.")]
+        public string PatientId { get; set; }
 
-        public string? Comment { get; set; }
+        [Required(ErrorMessage = "Comment is required.")]
+        [StringLength(500, ErrorMessage = "Comment cannot exceed 500 characters.")]
+        public string Comment { get; set; }
+
+        [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
+        public int Rating { get; set; }
+
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
     }
 }
 
