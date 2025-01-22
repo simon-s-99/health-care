@@ -33,7 +33,7 @@ namespace HealthCareABApi.Services.Implementations
         {
             var message = EmailMessage.Compose()
                 .SetCharsetTo("utf-8")
-                .To(sendTo)
+                .To(new System.Net.Mail.MailAddress(sendTo))
                 .WithSubject(emailSubject)
                 .WithPlainTextContent(emailMessage)
                 .WithNormalPriority()
@@ -42,6 +42,14 @@ namespace HealthCareABApi.Services.Implementations
             return message;
         }
 
+        /// <summary>
+        /// Attempt to send an e-mail via the Dependency Injected Email.Net.EmailService
+        /// </summary>
+        /// <param name="appointment">An instance of Appointment model.</param>
+        /// <param name="emailSubject">The subject text of the e-mail</param>
+        /// <param name="emailMessage">The main plain-text content of the e-mail</param>
+        /// <returns>The EmailSendingResult for the e-mail.</returns>
+        /// <exception cref="KeyNotFoundException">If user is not found in Database throw KeyNotFoundException.</exception>
         public async Task<EmailSendingResult> SendEmail(Appointment appointment, string emailSubject, string emailMessage)
         {
             var user = await _userService.GetUserByIdAsync(appointment.PatientId);
@@ -88,7 +96,7 @@ namespace HealthCareABApi.Services.Implementations
         /// </summary>
         /// <param name="appointment">An instance of Appointment model.</param>
         /// <param name="updatedExistingAppointment">Whether or not the appointment passed is an existing appointment that has been updated.</param>
-        /// <returns>The EmailSendingResult for the appointment.</returns>
+        /// <returns>The EmailSendingResult for the e-mail.</returns>
         /// <exception cref="ArgumentException">If an appointment with status 'None' is passed throw ArgumentException.</exception>
         /// <exception cref="InvalidOperationException">If an appointment with invalid AppointmentStatus is passed throw InvalidOperationException.</exception>
         public async Task<EmailSendingResult> SendAppointmentEmail(
