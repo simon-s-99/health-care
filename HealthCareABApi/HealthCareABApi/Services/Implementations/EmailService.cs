@@ -10,7 +10,7 @@ using HealthCareABApi.Services.Interfaces;
 
 namespace HealthCareABApi.Services.Implementations
 {
-    public class EmailService : Interfaces.IEmailService
+    public class EmailService
     {
         // DI for .AddEmailNet service
         private readonly Email.Net.IEmailService _emailService;
