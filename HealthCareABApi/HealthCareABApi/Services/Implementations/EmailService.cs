@@ -6,7 +6,6 @@
 
 using Email.Net;
 using HealthCareABApi.Models;
-using HealthCareABApi.Services.Interfaces;
 
 namespace HealthCareABApi.Services.Implementations
 {
