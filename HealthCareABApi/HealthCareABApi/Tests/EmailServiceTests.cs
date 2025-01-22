@@ -1,6 +1,4 @@
 ﻿using Xunit;
-using Moq;
-using Email.Net;
 using HealthCareABApi.Models;
 
 namespace HealthCareABApi.Tests
@@ -10,8 +8,6 @@ namespace HealthCareABApi.Tests
         [Fact]
         public async Task SendAppointmentEmail_UnsupportedAppointmentStatusNone_ShouldThrowException()
         {
-            //var testing = new HealthCareABApi.Services.Implementations.EmailService();
-
             // Arrange
             var emailService = new HealthCareABApi.Services.Implementations.EmailService();
 
@@ -21,7 +17,7 @@ namespace HealthCareABApi.Tests
                 PatientId = "",
                 CaregiverId = "",
                 DateTime = new DateTime(),
-                Status = AppointmentStatus.None//(AppointmentStatus)9001
+                Status = AppointmentStatus.None
             };
 
             // Act
@@ -34,8 +30,6 @@ namespace HealthCareABApi.Tests
         [Fact]
         public async Task SendAppointmentEmail_UnsupportedAppointmentStatus_ShouldThrowException()
         {
-            //var testing = new HealthCareABApi.Services.Implementations.EmailService();
-
             // Arrange
             var emailService = new HealthCareABApi.Services.Implementations.EmailService();
 
