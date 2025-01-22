@@ -62,7 +62,7 @@ namespace HealthCareABApi.Services.Implementations
         public async Task<EmailSendingResult> SendConfirmedAppointmentEmail(Appointment appointment)
         {
             string emailSubject = "Your appointment has been confirmed!";
-            string emailMessage = "";
+            string emailMessage = $"Your appointment at {appointment.DateTime.ToString()} has been confirmed.";
 
             return await SendEmail(appointment, emailSubject, emailMessage);
         }
@@ -70,7 +70,7 @@ namespace HealthCareABApi.Services.Implementations
         public async Task<EmailSendingResult> SendUpdatedAppointmentEmail(Appointment appointment)
         {
             string emailSubject = "Your appointment has been changed!";
-            string emailMessage = "";
+            string emailMessage = $"Your appointment time has been changed to {appointment.DateTime.ToString()}.";
 
             return await SendEmail(appointment, emailSubject, emailMessage);
         }
@@ -78,7 +78,7 @@ namespace HealthCareABApi.Services.Implementations
         public async Task<EmailSendingResult> SendCanceledAppointmentEmail(Appointment appointment)
         {
             string emailSubject = "Your appointment has been canceled.";
-            string emailMessage = "";
+            string emailMessage = $"Your appointment at {appointment.DateTime.ToString()} has been canceled.";
 
             return await SendEmail(appointment, emailSubject, emailMessage);
         }
