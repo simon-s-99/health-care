@@ -22,6 +22,13 @@ namespace HealthCareABApi.Services
             _userService = userService;
         }
 
+        /// <summary>
+        /// Create an appointment for a user (patient).
+        /// </summary>
+        /// <param name="dto">The changes to be made.</param>
+        /// <returns>The result of the operation.</returns>
+        /// <exception cref="KeyNotFoundException">If one or more users do not exist.</exception>
+        /// <exception cref="BadHttpRequestException">If an available slot for the booking does not exist.</exception>
         public async Task CreateAppointmentAsync(CreateAppointmentDTO dto)
         {
             bool bothUsersExist = await _userService.ExistsByIdAsync(dto.PatientId) && await _userService.ExistsByIdAsync(dto.CaregiverId);
@@ -31,13 +38,13 @@ namespace HealthCareABApi.Services
                 throw new KeyNotFoundException("User(s) not found.");
             }
 
-            var availability = await _availabilityService.GetAvailabilityStatusByCaregiverIdAsync(dto.CaregiverId, dto.DateTime) ?? throw new BadHttpRequestException("Caregiver is not available.");
+            var availability = await _availabilityService.GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime) ?? throw new BadHttpRequestException("Caregiver is not available.");
 
             Appointment appointment = new Appointment
             {
                 CaregiverId = dto.CaregiverId,
                 PatientId = dto.PatientId,
-                DateTime = dto.DateTime.ToUniversalTime(),
+                DateTime = dto.DateTime,
                 Status = dto.Status,
             };
 
@@ -52,6 +59,13 @@ namespace HealthCareABApi.Services
             await _availabilityService.UpdateAvailabilityByIdAsync(availability.Id, updatedAvailability);
         }   
 
+        /// <summary>
+        /// Get all upcoming and previous appointments for a specific user.
+        /// </summary>
+        /// <param name="id">The user's id.</param>
+        /// <param name="date">(Optional) Get appointments for a specific date only.</param>
+        /// <param name="isPatient">Whether to search for the patientId or caregiverId.</param>
+        /// <returns>A list of appointments, or an empty list.</returns>
         public async Task<List<Appointment>> GetAllAppointmentsByUserIdAsync(string id, DateTime? date, bool isPatient)
         {
             var appointments = new List<Appointment>();
@@ -68,12 +82,25 @@ namespace HealthCareABApi.Services
             return appointments.OrderBy(a => a.DateTime).ToList(); //Returns empty array if user is valid but no appointments are found
         }
 
+        /// <summary>
+        /// Get an appointment by its id.
+        /// </summary>
+        /// <param name="id">The id of the appointment.</param>
+        /// <returns>The appointment, or nothing.</returns>
         public async Task<Appointment> GetAppointmentByIdAsync(string id)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(id);
             return appointment;
         }
 
+        /// <summary>
+        /// Updates an appointment with the specified values.
+        /// </summary>
+        /// <param name="id">The id of the appojntment to be updated.</param>
+        /// <param name="dto">The changes to be made.</param>
+        /// <returns>The result of the operation.</returns>
+        /// <exception cref="KeyNotFoundException">If appointment doesn't exist.</exception>
+        /// <exception cref="BadHttpRequestException">If the date is invalid, if supplied.</exception>
         public async Task UpdateAppointmentByIdAsync(string id, UpdateAppointmentDTO dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
@@ -97,10 +124,27 @@ namespace HealthCareABApi.Services
             await _appointmentRepository.UpdateAsync(filter, updates);
         }
 
+        /// <summary>
+        /// Delete an appointment by its id.
+        /// </summary>
+        /// <param name="id">The id of the appointment.</param>
+        /// <returns>The result of the operation.</returns>
+        /// <exception cref="KeyNotFoundException">If appointment does not exist.</exception>
         public async Task DeleteAppointmentByIdAsync(string id)
         {
             var appointment = await GetAppointmentByIdAsync(id) ?? throw new KeyNotFoundException("Appointment not found.");
+
             await _appointmentRepository.DeleteAsync(id);
+
+            var previousAvailability = await _availabilityService.GetAvailabilityByCaregiverIdAsync(appointment.CaregiverId, null);
+
+            UpdateAvailabilityDTO dto = new UpdateAvailabilityDTO
+            {
+                AvailableSlots = new List<DateTime> { appointment.DateTime }
+            };
+
+            // Update the availability with the canceled appointment's date and time
+            await _availabilityService.UpdateAvailabilityByIdAsync(previousAvailability.Id, dto);
         }
     }
 }

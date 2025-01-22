@@ -20,6 +20,13 @@ namespace HealthCareABApi.Services
             _userService = userService;
         }
 
+        /// <summary>
+        /// Create an availability for a user (caregiver).
+        /// </summary>
+        /// <param name="dto">The changes to be made.</param>
+        /// <returns>The result of the operation.</returns>
+        /// <exception cref="KeyNotFoundException">If user does not exist.</exception>
+        /// <exception cref="ArithmeticException">If any date is invalid.</exception>
         public async Task CreateAvailabilityAsync(CreateAvailabilityDTO dto)
         {
             bool userExists = await _userService.ExistsByIdAsync(dto.CaregiverId);
@@ -37,7 +44,7 @@ namespace HealthCareABApi.Services
                 }
             }
 
-            var existingAvailbility = await GetAvailabilityStatusByCaregiverIdAsync(dto.CaregiverId, null);
+            var existingAvailbility = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, null);
 
             if (existingAvailbility is not null) // If availability already exists for user, add the new availability's slot(s) to the existing slots
             {
@@ -63,13 +70,25 @@ namespace HealthCareABApi.Services
             }
         }
 
+        /// <summary>
+        /// Delete an availability by its id.
+        /// </summary>
+        /// <param name="id">The id of the availability.</param>
+        /// <returns>The result of the operation.</returns>
+        /// <exception cref="KeyNotFoundException">If the availability does not exist.</exception>
         public async Task DeleteAvailabilityByIdAsync(string id)
         {
             var availability = await GetAvailabilityByIdAsync(id) ?? throw new KeyNotFoundException("Appointment not found.");
             await _availabilityRepository.DeleteAsync(id);
         }
 
-        public async Task<Availability> GetAvailabilityStatusByCaregiverIdAsync(string caregiverId, DateTime? dateTime)
+        /// <summary>
+        /// Get an availability by its caregiver's id.
+        /// </summary>
+        /// <param name="caregiverId">The id of the caregiver.</param>
+        /// <param name="dateTime">(Optional) The specific date of the availability.</param>
+        /// <returns>An availability, or nothing.</returns>
+        public async Task<Availability> GetAvailabilityByCaregiverIdAsync(string caregiverId, DateTime? dateTime)
         {
             if (dateTime is not null)
             {
@@ -81,11 +100,20 @@ namespace HealthCareABApi.Services
             }
         }
 
+        /// <summary>
+        /// Get all availabilites.
+        /// </summary>
+        /// <returns>A list of availabilites, or an empty list.</returns>
         public async Task<List<Availability>> GetAllAvailabilitiesAsync()
         {
             return await _availabilityRepository.GetAllAsync();
         }
 
+        /// <summary>
+        /// Get all availabilites from a specific date.
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <returns>A list of availabilites, or an empty list.</returns>
         public async Task<List<Availability>> GetAllAvailabilitiesByDateAsync(DateTime date)
         {
             var allAvailabilities = await GetAllAvailabilitiesAsync();
@@ -105,22 +133,31 @@ namespace HealthCareABApi.Services
             return result;
         }
 
+        /// <summary>
+        /// Get an availability by its id.
+        /// </summary>
+        /// <param name="id">The id of the availability.</param>
+        /// <returns>The availability or nothing.</returns>
         public async Task<Availability> GetAvailabilityByIdAsync(string id)
         {
             var appointment = await _availabilityRepository.GetByIdAsync(id);
             return appointment;
         }
 
+
+        /// <summary>
+        /// Update an availability by its id.
+        /// </summary>
+        /// <param name="id">The id of the availability.</param>
+        /// <param name="dto">The changes to be made.</param>
+        /// <returns>The result of the operation.</returns>
+        /// <exception cref="KeyNotFoundException">If the availability does not exist.</exception>
         public async Task UpdateAvailabilityByIdAsync(string id, UpdateAvailabilityDTO dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
 
             var availability = await GetAvailabilityByIdAsync(id) ?? throw new KeyNotFoundException("Availability not found.");
 
-            if (dto.AvailableSlots.Count == 0) // Remove availability if it has no available slots
-            {
-                await _availabilityRepository.DeleteAsync(id);
-            }
             var dtoWithoutDuplicates = dto.AvailableSlots.Distinct().ToList();
 
             // Get availability by id
