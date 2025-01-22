@@ -22,6 +22,8 @@ namespace HealthCareABApi.Services.Implementations
             _userService = userService;
         }
 
+        public EmailService() { } // empty constructor mainly used for tests
+
         /// <summary>
         /// Composes an EmailMessage instance.
         /// </summary>

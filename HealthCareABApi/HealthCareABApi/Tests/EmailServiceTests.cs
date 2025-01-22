@@ -7,41 +7,52 @@ namespace HealthCareABApi.Tests
 {
     public class EmailServiceTests
     {
-        // Inject base versions of Mocks so that we do not have to re-create it for every test
-        private readonly Mock<HealthCareABApi.Services.Implementations.EmailService> _emailServiceMock;
-        //private readonly Mock<Email.Net.IEmailService> _fromPackageEmailServiceMock;
-        //private readonly Mock<HealthCareABApi.Services.Implementations.UserService> _userServiceMock;
-
-        public EmailServiceTests()
-        {
-            _emailServiceMock = new Mock<HealthCareABApi.Services.Implementations.EmailService>(
-                //_fromPackageEmailServiceMock.Object,
-                //_userServiceMock.Object
-                );
-        }
-
         [Fact]
         public async Task SendAppointmentEmail_UnsupportedAppointmentStatusNone_ShouldThrowException()
         {
+            //var testing = new HealthCareABApi.Services.Implementations.EmailService();
+
             // Arrange
+            var emailService = new HealthCareABApi.Services.Implementations.EmailService();
+
             var appointment = new Appointment
             {
                 Id = "",
                 PatientId = "",
                 CaregiverId = "",
                 DateTime = new DateTime(),
-                Status = AppointmentStatus.Completed
+                Status = AppointmentStatus.None//(AppointmentStatus)9001
             };
 
-            //_emailServiceMock.Setup(service => service.SendAppointmentEmail(appointment, false)).Throws<Exception>();
-
             // Act
-            var result = () => _emailServiceMock.Object.SendAppointmentEmail(appointment, false);
-
-            Console.WriteLine( result.ToString() );
+            var result = () => emailService.SendAppointmentEmail(appointment, false);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(result);
+        }
+
+        [Fact]
+        public async Task SendAppointmentEmail_UnsupportedAppointmentStatus_ShouldThrowException()
+        {
+            //var testing = new HealthCareABApi.Services.Implementations.EmailService();
+
+            // Arrange
+            var emailService = new HealthCareABApi.Services.Implementations.EmailService();
+
+            var appointment = new Appointment
+            {
+                Id = "",
+                PatientId = "",
+                CaregiverId = "",
+                DateTime = new DateTime(),
+                Status = (AppointmentStatus)9001 // this enum does not exist in the model
+            };
+
+            // Act
+            var result = () => emailService.SendAppointmentEmail(appointment, false);
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(result);
         }
     }
 }
