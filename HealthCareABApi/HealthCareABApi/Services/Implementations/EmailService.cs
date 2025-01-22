@@ -50,6 +50,7 @@ namespace HealthCareABApi.Services.Implementations
             {
                 string recipientEmail = user.Email;
                 EmailMessage emailToBeSent = ComposeEmail(recipientEmail, emailSubject, emailMessage);
+
                 return await _emailService.SendAsync(emailToBeSent);
             }
             else
@@ -66,11 +67,8 @@ namespace HealthCareABApi.Services.Implementations
             return await SendEmail(appointment, emailSubject, emailMessage);
         }
 
-        public async Task<EmailSendingResult> SendChangedAppointmentEmail(Appointment appointment)
+        public async Task<EmailSendingResult> SendUpdatedAppointmentEmail(Appointment appointment)
         {
-            // TODO: implement sending of e-mails when an appointment is scheduled but
-            //          the date or doctor (or any other details) have been modified.
-
             string emailSubject = "Your appointment has been changed!";
             string emailMessage = "";
 
@@ -85,19 +83,29 @@ namespace HealthCareABApi.Services.Implementations
             return await SendEmail(appointment, emailSubject, emailMessage);
         }
 
-        public Task<EmailSendingResult> SendAppointmentEmail(Appointment appointment)
+        /// <summary>
+        /// Send an e-mail based on the status of the Appointment instance.
+        /// </summary>
+        /// <param name="appointment">An instance of Appointment model.</param>
+        /// <param name="updatedExistingAppointment">Whether or not the appointment passed is an existing 
+        /// appointment that has been updated.</param>
+        /// <returns>The EmailSendingResult for the appointment.</returns>
+        /// <exception cref="ArgumentException">If an appointment with status 'None' is passed throw ArgumentException.</exception>
+        public async Task<EmailSendingResult> SendAppointmentEmail(
+            Appointment appointment,
+            bool? updatedExistingAppointment = false)
         {
-            if (appointment.Status == AppointmentStatus.Scheduled)
+            if (updatedExistingAppointment is not null && updatedExistingAppointment == true)
             {
-                return SendConfirmedAppointmentEmail(appointment);
-
-                // TODO: implement sending of e-mails when an appointment is scheduled but
-                //          the date or doctor (or any other details) have been modified.
-                // return SendChangedAppointmentEmail(appointment);
+                return await SendUpdatedAppointmentEmail(appointment);
+            }
+            else if (appointment.Status == AppointmentStatus.Scheduled)
+            {
+                return await SendConfirmedAppointmentEmail(appointment);
             }
             else if (appointment.Status == AppointmentStatus.Cancelled)
             {
-                return SendCanceledAppointmentEmail(appointment);
+                return await SendCanceledAppointmentEmail(appointment);
             }
             else
             {   // if appointment status == 'None'
