@@ -10,6 +10,6 @@ namespace HealthCareABApi.Services.Interfaces
         Task<EmailSendingResult> SendConfirmedAppointmentEmail(Appointment appointment);
         Task<EmailSendingResult> SendUpdatedAppointmentEmail(Appointment appointment);
         Task<EmailSendingResult> SendCanceledAppointmentEmail(Appointment appointment);
-        Task<EmailSendingResult> SendAppointmentEmail(Appointment appointment, bool? updatedExistingAppointment);
+        Task<EmailSendingResult> SendAppointmentEmail(Appointment appointment, bool updatedExistingAppointment);
     }
 }
