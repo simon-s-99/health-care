@@ -49,6 +49,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 // Register custom services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<HealthCareABApi.Services.Implementations.EmailService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 //builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
 
