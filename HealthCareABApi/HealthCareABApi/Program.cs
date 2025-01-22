@@ -28,6 +28,15 @@ else
     );
 }
 
+// register Email.Net service with configuration for Dependency Injection to EmailService
+builder.Services.AddEmailNet(options =>
+{
+    options.PauseSending = builder.Environment.IsDevelopment(); // pause sending in dev mode
+    options.DefaultFrom = new System.Net.Mail.MailAddress(
+        address: "test@example.com",
+        displayName: "Test Sender");
+    options.DefaultEmailDeliveryChannel = SmtpEmailDeliveryChannel.Name;
+});
 
 // Register MongoDB context
 builder.Services.AddScoped<IMongoDbContext, MongoDbContext>();
@@ -42,16 +51,6 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 //builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
-
-// register Email.Net service with configuration for Dependency Injection to EmailService
-builder.Services.AddEmailNet(options =>
-{
-    options.PauseSending = builder.Environment.IsDevelopment(); // pause sending in dev mode
-    options.DefaultFrom = new System.Net.Mail.MailAddress(
-        address: "test@example.com",
-        displayName: "Test Sender");
-    options.DefaultEmailDeliveryChannel = SmtpEmailDeliveryChannel.Name;
-});
 
 // Add controllers
 builder.Services.AddControllers();
