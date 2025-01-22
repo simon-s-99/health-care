@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using HealthCareABApi.Models;
+using System.Net.Mail;
 
 namespace HealthCareABApi.Tests
 {
@@ -47,6 +48,26 @@ namespace HealthCareABApi.Tests
 
             // Assert
             await Assert.ThrowsAsync<InvalidOperationException>(result);
+        }
+
+        [Fact]
+        public void ComposeEmailTest_EmailComposedCorrectly()
+        {
+            // Arrange
+            var emailService = new HealthCareABApi.Services.Implementations.EmailService();
+
+            var recipient = new MailAddress("test@example.com");
+            string subject = "TestSubject";
+            string plainTextBody = "TestBody";
+
+            // Act
+            var result = emailService.ComposeEmail(recipient.Address, subject, plainTextBody);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(recipient.Address, result.To.FirstOrDefault().Address);
+            Assert.Equal(subject, result.Subject);
+            Assert.Equal(plainTextBody, result.PlainTextBody);
         }
     }
 }
