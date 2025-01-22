@@ -1,4 +1,4 @@
-﻿using HealthCareABApi.DTO;
+using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,26 +7,26 @@ namespace HealthCareABApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AppointmentController : ControllerBase
+    public class AvailabilityController : ControllerBase
     {
-        private readonly IAppointmentService _appointmentService;
+        private readonly IAvailabilityService _availabilityService;
 
-        public AppointmentController(IAppointmentService appointmentService)
+        public AvailabilityController(IAvailabilityService availabilityService)
         {
-            _appointmentService = appointmentService;
+            _availabilityService = availabilityService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAppointment([FromBody] CreateAppointmentDTO dto)
+        public async Task<IActionResult> CreateAvailability([FromBody] CreateAvailabilityDTO dto)
         {
-            if (string.IsNullOrEmpty(dto.PatientId) || string.IsNullOrEmpty(dto.CaregiverId) || dto.DateTime < DateTime.Today || dto.Status == AppointmentStatus.None)
+            if (dto.AvailableSlots.Count == 0 || string.IsNullOrEmpty(dto.CaregiverId))
             {
                 return BadRequest("One more more fields are null.");
             }
 
             try
             {
-                await _appointmentService.CreateAppointmentAsync(dto);
+                await _availabilityService.CreateAvailabilityAsync(dto);
                 return StatusCode(201);
             }
             catch (Exception ex)
@@ -36,7 +36,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAppointmentById([FromQuery] string id)
+        public async Task<IActionResult> GetAvailabilityById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -45,14 +45,14 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+                var availability = await _availabilityService.GetAvailabilityByIdAsync(id);
 
-                if (appointment is null)
+                if (availability is null)
                 {
                     return NotFound();
                 }
 
-                return Ok(appointment);
+                return Ok(availability);
             }
             catch (Exception ex)
             {
@@ -60,18 +60,18 @@ namespace HealthCareABApi.Controllers
             }
         }
 
-        [HttpGet("user/")]
-        public async Task<IActionResult> GetAllAppointmentsByUserIdAsync([FromQuery] string id, [FromQuery] DateTime? date, [FromQuery] bool isPatient = true) // Defaults to true
+        [HttpGet("date")]
+        public async Task<IActionResult> GetAllAvailabilitiesByDate([FromQuery] DateTime date)
         {
-            if (string.IsNullOrEmpty(id))
+            if (date < DateTime.Today)
             {
-                return BadRequest("Invalid id.");
+                return BadRequest("Invalid date.");
             }
 
             try
             {
-                var appointments = await _appointmentService.GetAllAppointmentsByUserIdAsync(id, date, isPatient);
-                return Ok(appointments);
+                var availabilities = await _availabilityService.GetAllAvailabilitiesByDateAsync(date);
+                return Ok(availabilities);
             }
             catch (Exception ex)
             {
@@ -80,7 +80,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateAppointmentById([FromQuery] string id, [FromBody] UpdateAppointmentDTO dto)
+        public async Task<IActionResult> UpdateAvailabilityById([FromQuery] string id, [FromBody] UpdateAvailabilityDTO dto)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -89,7 +89,7 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                await _appointmentService.UpdateAppointmentByIdAsync(id, dto);
+                await _availabilityService.UpdateAvailabilityByIdAsync(id, dto);
                 return NoContent();
             }
             catch (Exception ex)
@@ -99,7 +99,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAppointmentById([FromQuery] string id)
+        public async Task<IActionResult> DeleteAvailabilityById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -108,7 +108,7 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                await _appointmentService.DeleteAppointmentByIdAsync(id);
+                await _availabilityService.DeleteAvailabilityByIdAsync(id);
                 return NoContent();
             }
             catch (Exception ex)

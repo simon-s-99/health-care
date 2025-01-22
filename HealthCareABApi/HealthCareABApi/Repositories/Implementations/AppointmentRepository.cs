@@ -1,4 +1,4 @@
-using HealthCareABApi.Models;
+﻿using HealthCareABApi.Models;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Repositories.Implementations
@@ -22,14 +22,25 @@ namespace HealthCareABApi.Repositories.Implementations
             return await _collection.Find(a => a.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Appointment>> GetAllByPatientId(string id)
+        public async Task<List<Appointment>> GetAllByPatientId(string id, DateTime? date)
         {
-            return await _collection.Find(u => u.PatientId == id).ToListAsync();
+            var collection = await _collection.Find(u => u.PatientId == id).ToListAsync();
+            if (date is not null)
+            {
+                return collection.Where(a => a.DateTime.Date == date.Value.Date).ToList();
+            }
+            return collection;
+
         }
 
-        public async Task<List<Appointment>> GetAllByCaregiverId(string id)
+        public async Task<List<Appointment>> GetAllByCaregiverId(string id, DateTime? date)
         {
-            return await _collection.Find(u => u.CaregiverId == id).ToListAsync();
+            var collection = await _collection.Find(u => u.CaregiverId == id).ToListAsync();
+            if (date is not null)
+            {
+                return collection.Where(a => a.DateTime.Date == date.Value.Date).ToList();
+            }
+            return collection;
         }
 
         public async Task CreateAsync(Appointment appointment)

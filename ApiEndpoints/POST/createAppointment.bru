@@ -1,0 +1,20 @@
+meta {
+  name: createAppointment
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5148/api/appointment
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "patientId": "6787c0bdac13847d0e917f7b",
+    "caregiverId": "6787d1ac02047fbc901e65fd",
+    "DateTime": "2025-04-01T16:00Z",
+    "status": 1
+  }
+}

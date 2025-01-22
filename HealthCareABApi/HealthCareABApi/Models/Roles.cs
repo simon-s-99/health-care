@@ -1,4 +1,4 @@
-namespace HealthCareABApi.Models
+﻿namespace HealthCareABApi.Models
 {
     public static class Roles
     {
