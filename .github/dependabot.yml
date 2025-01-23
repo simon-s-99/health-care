@@ -13,8 +13,6 @@ updates:
       dependencies:
         patterns:
           - "*"
-    ignore:
-      - dependency-name: 'Microsoft.AspNetCore.Authorization'
     reviewers:
       - "simon-s-99"
       - "Samuel-Loof"
