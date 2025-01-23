@@ -176,45 +176,51 @@ namespace HealthCareABApi.Tests
         }
 
         [Fact]
-        public async Task GetAllAppointmentsByUserIdAsync_ReturnsOk_WithListOfAppointments()
+        public async Task GetAllAppointmentsByUserIdAsync_ReturnsFilteredAppointmentsByDate()
         {
             // Arrange
             var mockService = new Mock<IAppointmentService>();
             var controller = new AppointmentController(mockService.Object);
 
             var userId = "678523516caf0d38580eb537";
-            var appointments = new List<Appointment>
-            {
-                new Appointment
-                {
-                    Id = "1",
-                    PatientId = userId,
-                    CaregiverId = "caregiver1",
-                    DateTime = DateTime.Now.AddDays(1),
-                    Status = AppointmentStatus.Scheduled
-                },
-                new Appointment
-                {
-                    Id = "2",
-                    PatientId = userId,
-                    CaregiverId = "caregiver2",
-                    DateTime = DateTime.Now.AddDays(2),
-                    Status = AppointmentStatus.Completed
-                }
-            };
+            var filterDate = DateTime.Now.Date;
 
-            mockService
-                .Setup(svc => svc.GetAllAppointmentsByUserIdAsync(userId, true))
-                .ReturnsAsync(appointments);
+            var appointments = new List<Appointment>
+        {
+        new Appointment
+        {
+            Id = "1",
+            PatientId = userId,
+            CaregiverId = "caregiver1",
+            DateTime = filterDate.AddHours(10), // Matches filter
+            Status = AppointmentStatus.Scheduled
+        },
+        new Appointment
+        {
+            Id = "2",
+            PatientId = userId,
+            CaregiverId = "caregiver2",
+            DateTime = filterDate.AddDays(1), // Does not match filter
+            Status = AppointmentStatus.Completed
+        }
+        };
+
+            mockService.Setup(svc => svc.GetAllAppointmentsByUserIdAsync(userId, filterDate, true))
+                       .ReturnsAsync(appointments.Where(a => a.DateTime.Date == filterDate).ToList());
 
             // Act
-            var result = await controller.GetAllAppointmentsByUserIdAsync(userId);
+            var result = await controller.GetAllAppointmentsByUserIdAsync(userId, filterDate, true);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnedAppointments = Assert.IsType<List<Appointment>>(okResult.Value);
-            Assert.Equal(2, returnedAppointments.Count);
+            Assert.Single(returnedAppointments);
+            Assert.Equal("1", returnedAppointments[0].Id);
         }
+
+
+
+
 
 
     }
