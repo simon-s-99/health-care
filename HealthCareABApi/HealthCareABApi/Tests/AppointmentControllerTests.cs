@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace HealthCareABTests.Tests.Controller.AppointmentControllerTest
+namespace HealthCareABApi.Tests
 {
     public class AppointmentControllerTests
     {

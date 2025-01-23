@@ -6,7 +6,7 @@ using Xunit;
 using HealthCareABApi.Repositories.Interfaces;
 
 
-namespace HealthCareABTests.Tests.Controller.FeedbackControllerTest
+namespace HealthCareABApi.Tests.FeedbackTests
 {
 
     // Controller Tests: Ensures API endpoints return the correct responses to the client
