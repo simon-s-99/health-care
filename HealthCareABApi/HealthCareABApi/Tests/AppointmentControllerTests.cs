@@ -18,6 +18,18 @@ namespace HealthCareABApi.Tests
             var mockService = new Mock<IAppointmentService>();
             var controller = new AppointmentController(mockService.Object);
 
+
+            // Mock the logged in user/patient
+            controller.ControllerContext.HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "678523516caf0d38580eb536"),
+                    new Claim(ClaimTypes.Role, Roles.User)
+                }
+                ))
+            };
+
             CreateAppointmentDTO dto = new CreateAppointmentDTO
             {
                 PatientId = "678523516caf0d38580eb536",
