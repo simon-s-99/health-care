@@ -30,6 +30,21 @@ namespace HealthCareABApi.Controllers
 
             try
             {
+                // Get the logged in users role and identifier
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var roles = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                // Check if the user has the right to create this appointment
+                bool isUserUnauthorized =
+                    (roles?.Contains(Roles.User) == true && dto.PatientId != userId) ||
+                    (roles?.Contains(Roles.Admin) == true && dto.CaregiverId != userId);
+
+                if (isUserUnauthorized)
+                {
+                    return Forbid("You do not have access to this appointment.");
+                }
+
+                // Create the appointment if the previous checks are successful
                 await _appointmentService.CreateAppointmentAsync(dto);
                 return StatusCode(201);
             }
@@ -54,7 +69,7 @@ namespace HealthCareABApi.Controllers
 
                 if (appointment == null)
                 {
-                    return NotFound(); 
+                    return NotFound();
                 }
 
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -73,7 +88,7 @@ namespace HealthCareABApi.Controllers
             }
             catch (FormatException)
             {
-                return NotFound(); 
+                return NotFound();
             }
             catch (Exception ex)
             {
