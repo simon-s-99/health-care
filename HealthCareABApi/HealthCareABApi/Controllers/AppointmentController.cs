@@ -107,7 +107,7 @@ namespace HealthCareABApi.Controllers
         /// <param name="isPatient">Whether the user is a patient (default is true).</param>
         /// <returns>A list of appointments matching the criteria.</returns>
         [HttpGet("user/")]
-        public async Task<IActionResult> GetAllAppointmentsByUserIdAsync([FromQuery] string id, [FromQuery] bool isPatient = true) // Defaults to true
+        public async Task<IActionResult> GetAllAppointmentsByUserIdAsync([FromQuery] string id, [FromQuery] DateTime? date, [FromQuery] bool isPatient = true) // Defaults to true
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -116,7 +116,7 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                var appointments = await _appointmentService.GetAllAppointmentsByUserIdAsync(id, isPatient);
+                var appointments = await _appointmentService.GetAllAppointmentsByUserIdAsync(id, date, isPatient);
                 return Ok(appointments);
             }
             catch (Exception ex)

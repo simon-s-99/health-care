@@ -1,0 +1,24 @@
+meta {
+  name: getAppointment
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5148/api/appointment?id=67865f3af854e308a3e62f4d
+  body: json
+  auth: none
+}
+
+params:query {
+  id: 67865f3af854e308a3e62f4d
+}
+
+body:json {
+  {
+    "patientId": "6784fadce3f6a313340fd8ab",
+    "caregiverId": "6784fadce3f6a313340fd8aa",
+    "datetime": "2024-01-01",
+    "status": 1
+  }
+}

@@ -1,4 +1,4 @@
-namespace HealthCareABApi.Configurations
+﻿namespace HealthCareABApi.Configurations
 {
     public class MongoDBSettings
     {

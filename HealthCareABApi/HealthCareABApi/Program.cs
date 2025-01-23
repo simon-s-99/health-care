@@ -39,7 +39,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-//builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 
 
 
