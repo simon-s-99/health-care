@@ -12,7 +12,7 @@ namespace HealthCareABApi.Repositories.Implementations
             _collection = context.Appointments;
         }
 
-        public async Task<IEnumerable<Appointment>> GetAllAsync()
+        public async Task<List<Appointment>> GetAllAsync()
         {
             return await _collection.Find(_ => true).ToListAsync();
         }

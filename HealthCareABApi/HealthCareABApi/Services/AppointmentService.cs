@@ -50,13 +50,8 @@ namespace HealthCareABApi.Services
 
             await _appointmentRepository.CreateAsync(appointment);
 
-            UpdateAvailabilityDTO updatedAvailability = new UpdateAvailabilityDTO
-            {
-                AvailableSlots = availability.AvailableSlots
-            };
-            updatedAvailability.AvailableSlots.Remove(dto.DateTime); // Remove slot from availability
-
-            await _availabilityService.UpdateAvailabilityByIdAsync(availability.Id, updatedAvailability);
+            // Delete availability
+            await _availabilityService.DeleteAvailabilityByIdAsync(availability.Id);
         }   
 
         /// <summary>
@@ -138,13 +133,10 @@ namespace HealthCareABApi.Services
 
             var previousAvailability = await _availabilityService.GetAvailabilityByCaregiverIdAsync(appointment.CaregiverId, null);
 
-            UpdateAvailabilityDTO dto = new UpdateAvailabilityDTO
-            {
-                AvailableSlots = new List<DateTime> { appointment.DateTime }
-            };
+            CreateAvailabilityDTO availabilityDto = new CreateAvailabilityDTO(appointment.CaregiverId, appointment.DateTime);
 
-            // Update the availability with the canceled appointment's date and time
-            await _availabilityService.UpdateAvailabilityByIdAsync(previousAvailability.Id, dto);
+            // Create a new availability with the canceled appointment's date, time, and caregiver
+            await _availabilityService.CreateAvailabilityAsync(availabilityDto);
         }
     }
 }

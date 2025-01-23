@@ -5,7 +5,7 @@ namespace HealthCareABApi.Repositories
 {
     public interface IAppointmentRepository
     {
-        Task<IEnumerable<Appointment>> GetAllAsync();
+        Task<List<Appointment>> GetAllAsync();
         Task<Appointment> GetByIdAsync(string id);
         Task CreateAsync(Appointment appointment);
         Task UpdateAsync(FilterDefinition<Appointment> filter, UpdateDefinition<Appointment> update);

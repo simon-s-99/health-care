@@ -2,6 +2,6 @@
 {
     public class UpdateAvailabilityDTO
     {
-        public List<DateTime>? AvailableSlots { get; set; }
+        public DateTime DateTime { get; set; } = new DateTime(1111, 11, 11); // Initialize as an invalid date
     }
 }
