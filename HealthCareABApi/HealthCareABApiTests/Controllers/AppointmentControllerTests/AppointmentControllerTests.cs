@@ -2,8 +2,10 @@
 using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Security.Claims;
 
 namespace HealthCareABApiTests.Controllers
 {
