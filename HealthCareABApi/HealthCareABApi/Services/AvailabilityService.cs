@@ -37,7 +37,7 @@ namespace HealthCareABApi.Services
             }
 
 
-            if (dto.DateTime < DateTime.Now)
+            if (dto.DateTime < DateTime.Now.ToUniversalTime())
             {
                 throw new ArithmeticException("Invalid date.");
             }
