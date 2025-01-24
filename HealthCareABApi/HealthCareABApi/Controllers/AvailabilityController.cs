@@ -19,11 +19,6 @@ namespace HealthCareABApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAvailability([FromBody] CreateAvailabilityDTO dto)
         {
-            if (dto.AvailableSlots.Count == 0 || string.IsNullOrEmpty(dto.CaregiverId))
-            {
-                return BadRequest("One more more fields are null.");
-            }
-
             try
             {
                 await _availabilityService.CreateAvailabilityAsync(dto);

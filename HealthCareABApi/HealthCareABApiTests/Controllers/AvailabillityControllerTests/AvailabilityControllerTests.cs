@@ -15,7 +15,7 @@ namespace HealthCareABApiTests.Controllers
             var mockService = new Mock<IAvailabilityService>();
             var controller = new AvailabilityController(mockService.Object);
 
-            CreateAvailabilityDTO dto = new CreateAvailabilityDTO("678523516caf0d38580eb537", new List<DateTime> { DateTime.Now.AddDays(14), DateTime.Now.AddDays(15) });
+            CreateAvailabilityDTO dto = new CreateAvailabilityDTO("678523516caf0d38580eb537", DateTime.Now.AddDays(15));
             mockService.Setup(svc => svc.CreateAvailabilityAsync(dto)).Returns(Task.CompletedTask);
 
             // Act
@@ -35,7 +35,7 @@ namespace HealthCareABApiTests.Controllers
             var controller = new AvailabilityController(mockService.Object);
 
             // Date is in the past
-            CreateAvailabilityDTO dto = new CreateAvailabilityDTO("678523516caf0d38580eb537", new List<DateTime> { DateTime.Now.AddDays(14), new DateTime(2024, 01, 01) });
+            CreateAvailabilityDTO dto = new CreateAvailabilityDTO("678523516caf0d38580eb537", new DateTime(2024, 01, 01));
             mockService.Setup(svc => svc.CreateAvailabilityAsync(dto)).ThrowsAsync(new ArithmeticException("Invalid date."));
 
             // Act

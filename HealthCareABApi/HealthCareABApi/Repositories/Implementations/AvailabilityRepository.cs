@@ -45,7 +45,7 @@ namespace HealthCareABApi.Repositories.Implementations
 
         public async Task<Availability> GetByCaregiverIdAndDate(string caregiverId, DateTime dateTime)
         {
-            return await _collection.Find(a => a.CaregiverId == caregiverId && a.AvailableSlots.Contains((DateTime)dateTime)).FirstOrDefaultAsync();
+            return await _collection.Find(a => a.CaregiverId == caregiverId && a.DateTime == dateTime).FirstOrDefaultAsync();
         }
 
     }
