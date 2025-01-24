@@ -4,10 +4,8 @@ using HealthCareABApi.Models;
 using HealthCareABApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Security.Claims;
-using Xunit;
 
-namespace HealthCareABApi.Tests
+namespace HealthCareABApiTests.Controllers
 {
     public class AppointmentControllerTests
     {

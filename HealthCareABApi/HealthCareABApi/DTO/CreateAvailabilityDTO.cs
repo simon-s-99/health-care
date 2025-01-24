@@ -2,15 +2,15 @@
 {
     public class CreateAvailabilityDTO
     {
-        public CreateAvailabilityDTO(string caregiverId, List<DateTime> availableSlots)
+        public CreateAvailabilityDTO(string caregiverId, DateTime dateTime)
         {
             CaregiverId = caregiverId;
-            AvailableSlots = availableSlots;
+            DateTime = dateTime;
         }
 
         public string CaregiverId { get; private set; }
 
-        public List<DateTime> AvailableSlots { get; private set; }
+        public DateTime DateTime { get; private set; } = new DateTime(1111, 11, 11); // Initialize as an invalid date
     }
 }
 
