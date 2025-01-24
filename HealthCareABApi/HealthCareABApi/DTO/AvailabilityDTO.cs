@@ -1,12 +1,12 @@
-namespace HealthCareABApi.DTO
+﻿namespace HealthCareABApi.DTO
 {
     public class AvailabilityDTO
     {
-        public AvailabilityDTO(List<DateTime> availableSlots)
+        public AvailabilityDTO(DateTime dateTime)
         {
-            AvailableSlots = availableSlots;
+            DateTime = dateTime;
         }
 
-        private List<DateTime> AvailableSlots { get; set; }
+        private DateTime DateTime { get; set; } = new DateTime(1111, 11, 11); // Initialize as an invalid date
     }
 }

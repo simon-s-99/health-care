@@ -1,4 +1,5 @@
 using HealthCareABApi.Models;
+using HealthCareABApi.Repositories.Interfaces;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Repositories.Implementations
@@ -16,6 +17,17 @@ namespace HealthCareABApi.Repositories.Implementations
         {
             return await _collection.Find(_ => true).ToListAsync();
         }
+
+        public async Task<IEnumerable<Feedback>> GetPaginatedFeedbackAsync(int page, int pageSize)
+        {
+            return await _collection
+                .Find(_ => true)                           
+                .SortByDescending(f => f.CreationDate)    
+                .Skip((page - 1) * pageSize)              
+                .Limit(pageSize)                          
+                .ToListAsync();                           
+        }
+
 
         public async Task<Feedback> GetByIdAsync(string id)
         {

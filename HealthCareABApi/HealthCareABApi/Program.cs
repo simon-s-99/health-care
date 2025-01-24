@@ -1,10 +1,13 @@
 ﻿using System.Text;
 using HealthCareABApi.Configurations;
-using HealthCareABApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Implementations;
+using HealthCareABApi.Repositories.Interfaces;
+using HealthCareABApi.Services.Implementations;
+using HealthCareABApi.Services.Interfaces;
+using Email.Net;
+using Email.Net.Channel.Smtp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,8 +28,18 @@ else
     );
 }
 
+// register Email.Net service with configuration for Dependency Injection to EmailService
+builder.Services.AddEmailNet(options =>
+{
+    options.PauseSending = builder.Environment.IsDevelopment(); // pause sending in dev mode
+    options.DefaultFrom = new System.Net.Mail.MailAddress(
+        address: "test@example.com",
+        displayName: "Test Sender");
+    options.DefaultEmailDeliveryChannel = SmtpEmailDeliveryChannel.Name;
+});
+
 // Register MongoDB context
-builder.Services.AddSingleton<IMongoDbContext, MongoDbContext>();
+builder.Services.AddScoped<IMongoDbContext, MongoDbContext>();
 
 // Register repositories
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
@@ -34,11 +47,13 @@ builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 // Register custom services
-builder.Services.AddSingleton<UserService>();
-builder.Services.AddSingleton<JwtTokenService>();
-//builder.Services.AddScoped<AvailabilityService>(); // throws errors currently, commented out temporarily
-
-
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<JwtTokenService>();
+// this vv might cause problems since we have an empty constructor present in EmailService
+// TODO - verify that the DI is working correctly here
+builder.Services.AddScoped<HealthCareABApi.Services.Implementations.EmailService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 
 // Add controllers
 builder.Services.AddControllers();
@@ -142,7 +157,7 @@ builder.Services.AddCors(options =>
     {
 
         // Specify the allowed origins for this policy.
-        // Only requests coming from "https://localhost:7253" will be allowed.
+        // Only requests coming from "http://localhost:5173" will be allowed.
         // You can add more origins here if needed.
         policy.WithOrigins("http://localhost:5173")
               // Allow any HTTP method (e.g., GET, POST, PUT, DELETE) for cross-origin requests.

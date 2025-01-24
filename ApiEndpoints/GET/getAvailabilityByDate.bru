@@ -1,0 +1,15 @@
+meta {
+  name: getAvailabilityByDate
+  type: http
+  seq: 11
+}
+
+get {
+  url: http://localhost:5148/api/availability/date?date=2025-04-01
+  body: none
+  auth: none
+}
+
+params:query {
+  date: 2025-04-01
+}

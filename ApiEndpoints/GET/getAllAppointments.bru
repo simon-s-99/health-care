@@ -1,0 +1,17 @@
+meta {
+  name: getAllAppoointments
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:5148/api/appointment/user?id=6787c0bdac13847d0e917f7b&isPatient=true&date=2025-02-05
+  body: none
+  auth: none
+}
+
+params:query {
+  id: 6787c0bdac13847d0e917f7b
+  isPatient: true
+  date: 2025-02-05
+}

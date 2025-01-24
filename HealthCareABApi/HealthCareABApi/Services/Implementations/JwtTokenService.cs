@@ -1,10 +1,10 @@
-using HealthCareABApi.Models;
+﻿using HealthCareABApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace HealthCareABApi.Services
+namespace HealthCareABApi.Services.Implementations
 {
     // This class is responsible for generating JWT tokens.
     public class JwtTokenService

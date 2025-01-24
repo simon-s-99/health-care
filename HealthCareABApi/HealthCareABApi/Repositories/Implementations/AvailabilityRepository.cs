@@ -1,4 +1,5 @@
 using HealthCareABApi.Models;
+using HealthCareABApi.Repositories.Interfaces;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Repositories.Implementations
@@ -12,7 +13,7 @@ namespace HealthCareABApi.Repositories.Implementations
             _collection = context.Availabilities;
         }
 
-        public async Task<IEnumerable<Availability>> GetAllAsync()
+        public async Task<List<Availability>> GetAllAsync()
         {
             return await _collection.Find(_ => true).ToListAsync();
         }
@@ -27,9 +28,9 @@ namespace HealthCareABApi.Repositories.Implementations
             await _collection.InsertOneAsync(availability);
         }
 
-        public async Task UpdateAsync(string id, Availability availability)
+        public async Task UpdateAsync(FilterDefinition<Availability> filter, UpdateDefinition<Availability> update)
         {
-            await _collection.ReplaceOneAsync(a => a.Id == id, availability);
+            await _collection.UpdateOneAsync(filter, update);
         }
 
         public async Task DeleteAsync(string id)
@@ -37,9 +38,14 @@ namespace HealthCareABApi.Repositories.Implementations
             await _collection.DeleteOneAsync(a => a.Id == id);
         }
 
-        public async Task<IEnumerable<Availability>> GetByCaregiverIdAsync(string caregiverId)
+        public async Task<Availability> GetByCaregiverIdAsync(string caregiverId)
         {
-            return await _collection.Find(a => a.CaregiverId == caregiverId).ToListAsync();
+            return await _collection.Find(a => a.CaregiverId == caregiverId).FirstOrDefaultAsync();
+        }
+
+        public async Task<Availability> GetByCaregiverIdAndDate(string caregiverId, DateTime dateTime)
+        {
+            return await _collection.Find(a => a.CaregiverId == caregiverId && a.DateTime == dateTime).FirstOrDefaultAsync();
         }
 
     }

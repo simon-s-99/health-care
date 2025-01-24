@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 namespace HealthCareABApi.DTO
 {
-    public class RegisterDto
+    public class RegisterDTO
     {
         public required string Firstname { get; set; }
 

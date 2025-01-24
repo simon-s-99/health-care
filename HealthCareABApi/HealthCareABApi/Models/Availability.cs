@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace HealthCareABApi.Models
@@ -15,7 +15,7 @@ namespace HealthCareABApi.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public required string CaregiverId { get; set; }
 
-        public List<DateTime>? AvailableSlots { get; set; }
+        public DateTime DateTime { get; set; } = new DateTime(1111, 11, 11); // Initialize as an invalid date
     }
 }
 
