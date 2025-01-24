@@ -1,8 +1,5 @@
 ﻿using HealthCareABApi.DTO;
-using HealthCareABApi.Models;
-using HealthCareABApi.Repositories.Interfaces;
-using HealthCareABApi.Services;
-using Microsoft.AspNetCore.Authorization;
+using HealthCareABApi.Services.Implementations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareABApi.Controllers

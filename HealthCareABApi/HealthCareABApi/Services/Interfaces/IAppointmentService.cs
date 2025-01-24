@@ -2,7 +2,7 @@
 using HealthCareABApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthCareABApi.Repositories.Interfaces
+namespace HealthCareABApi.Services.Interfaces
 {
     public interface IAppointmentService
     {

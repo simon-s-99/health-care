@@ -3,7 +3,7 @@ using HealthCareABApi.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace HealthCareABApi.Services
+namespace HealthCareABApi.Services.Implementations
 {
 
     public class UserService
