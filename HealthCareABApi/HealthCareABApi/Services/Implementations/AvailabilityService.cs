@@ -1,13 +1,9 @@
-﻿using HealthCareABApi.Configurations;
-using HealthCareABApi.DTO;
+﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
-using HealthCareABApi.Repositories;
 using HealthCareABApi.Repositories.Interfaces;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using System.Linq;
 
-namespace HealthCareABApi.Services
+namespace HealthCareABApi.Services.Implementations
 {
     public class AvailabilityService : IAvailabilityService
     {

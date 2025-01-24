@@ -1,6 +1,5 @@
 ﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareABApi.Repositories.Interfaces
 {

@@ -2,6 +2,7 @@
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using HealthCareABApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using HealthCareABApi.Services;

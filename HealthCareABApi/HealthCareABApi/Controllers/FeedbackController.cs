@@ -1,9 +1,7 @@
 using HealthCareABApi.Models;
-using HealthCareABApi.Repositories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HealthCareABApi.Services;
 using HealthCareABApi.Repositories.Interfaces;
+using HealthCareABApi.Services.Interfaces;
 
 [ApiController]
 [Route("api/[controller]")]
