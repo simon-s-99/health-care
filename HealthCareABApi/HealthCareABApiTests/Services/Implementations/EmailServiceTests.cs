@@ -1,8 +1,7 @@
-﻿using Xunit;
-using HealthCareABApi.Models;
+﻿using HealthCareABApi.Models;
 using System.Net.Mail;
 
-namespace HealthCareABApi.Tests
+namespace HealthCareABApiTests.Services.Implementations
 {
     public class EmailServiceTests
     {
