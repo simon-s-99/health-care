@@ -67,6 +67,12 @@ namespace HealthCareABApi.Controllers
             return Ok(regResponse);
         }
 
+        [HttpPatch("Update")]
+        public async Task<IActionResult> Update([FromBody])
+        {
+
+        }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO request)
