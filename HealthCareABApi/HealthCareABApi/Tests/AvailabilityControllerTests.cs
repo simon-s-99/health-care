@@ -1,6 +1,5 @@
 ﻿using HealthCareABApi.Controllers;
 using HealthCareABApi.DTO;
-using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

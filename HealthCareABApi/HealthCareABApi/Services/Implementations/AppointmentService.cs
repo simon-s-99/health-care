@@ -1,13 +1,10 @@
-﻿using HealthCareABApi.Configurations;
-using HealthCareABApi.DTO;
+﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
-using HealthCareABApi.Repositories;
-using HealthCareABApi.Repositories.Implementations;
 using HealthCareABApi.Repositories.Interfaces;
-using Microsoft.Extensions.Options;
+using HealthCareABApi.Services.Interfaces;
 using MongoDB.Driver;
 
-namespace HealthCareABApi.Services
+namespace HealthCareABApi.Services.Implementations
 {
     public class AppointmentService : IAppointmentService
     {
