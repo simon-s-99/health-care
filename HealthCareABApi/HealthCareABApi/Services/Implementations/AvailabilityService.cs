@@ -1,6 +1,7 @@
 ﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
+using HealthCareABApi.Services.Interfaces;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Services.Implementations

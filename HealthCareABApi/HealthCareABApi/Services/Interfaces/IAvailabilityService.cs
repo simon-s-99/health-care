@@ -1,7 +1,7 @@
 ﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 
-namespace HealthCareABApi.Repositories.Interfaces
+namespace HealthCareABApi.Services.Interfaces
 {
     public interface IAvailabilityService
     {
