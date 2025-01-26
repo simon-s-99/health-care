@@ -3,7 +3,9 @@ using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Services.Implementations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using HealthCareABApi.Services.Helpers;
 
 namespace HealthCareABApi.Controllers
 {
@@ -67,9 +69,98 @@ namespace HealthCareABApi.Controllers
             return Ok(regResponse);
         }
 
+        [Authorize]
         [HttpPatch("Update")]
-        public async Task<IActionResult> Update([FromBody])
+        public async Task<IActionResult> Update([FromBody] UpdateDTO request)
         {
+            // Retrieve the user ID from JWT claims
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("User is not authenticated");
+
+
+            // Fetch the user from the database
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null) return NotFound("User not found");
+
+            // Update firstname
+            if (!string.IsNullOrEmpty(request.Firstname))
+                user.Firstname = request.Firstname;
+
+            // Update lastname
+            if (!string.IsNullOrEmpty(request.LastName))
+                user.Lastname = request.LastName;
+
+            // Email update
+            if (!string.IsNullOrEmpty(request.Email))
+            {
+                if (!ValidationHelper.IsValidEmail(request.Email)) return BadRequest("Invalid email format");
+
+                if (await _userService.ExistsByEmailAsync(request.Email) && request.Email != user.Email)
+                    return Conflict("Email is already in use");
+
+                user.Email = request.Email;
+            }
+
+            // Phone number
+            if (!string.IsNullOrEmpty(request.Phonenumber))
+            {
+                if (!ValidationHelper.IsValidPhoneNumber(request.Phonenumber))
+                    return BadRequest("Invalid phone number format");
+
+                if (await _userService.ExistsByPhoneNumberAsync(request.Phonenumber) && request.Phonenumber != user.Phonenumber)
+                    return Conflict("Phone number is already in use");
+
+                user.Phonenumber = request.Phonenumber;
+            }
+
+            await _userService.UpdateUserAsync(user);
+
+            return Ok(new
+            {
+                message = "User updated successfully",
+                updatedUser = new
+                {
+                    user.Firstname,
+                    user.Lastname,
+                    user.Email,
+                    user.Phonenumber
+                }
+            });
+
+
+
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        {
+            // Extract the user ID or username from claims
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("User is not authenticated");
+
+            // Fetch the user from the database
+            var user = await _userService.GetUserByIdAsync(userId);
+
+            if (user == null) NotFound("User not found");
+
+
+            // Verify the current password
+            if (!_userService.VerifyPassword(request.CurrentPassword, user.PasswordHash))
+                return BadRequest("Current password is incorrect");
+
+            if (request.NewPassword != request.ConfirmPassword)
+                return BadRequest("New password and confirmation password do not match");
+
+            if (request.NewPassword.Length < 8 || !ValidationHelper.HasComplexity(request.NewPassword))
+                return BadRequest("New password must be at least 8 characters and contain a mix of uppercase, lowercase, numbers, and special characters");
+
+            user.PasswordHash = _userService.HashPassword(request.NewPassword);
+            await _userService.UpdateUserAsync(user);
+
+            return Ok("Password changed successfully");
 
         }
 
