@@ -39,6 +39,12 @@ namespace HealthCareABApi.Services.Implementations
                 throw new ArithmeticException("Invalid date.");
             }
 
+            var duplicateAvailability = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime);
+
+            if (duplicateAvailability is not null)
+            {
+                throw new HttpRequestException("Availability already exists.");
+            }
 
             Availability availability = new Availability
             {
