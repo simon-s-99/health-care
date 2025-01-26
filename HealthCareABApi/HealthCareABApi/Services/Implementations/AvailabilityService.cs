@@ -91,7 +91,8 @@ namespace HealthCareABApi.Services.Implementations
         /// <returns>A list of availabilites, or an empty list.</returns>
         public async Task<List<Availability>> GetAllAvailabilitiesAsync()
         {
-            return await _availabilityRepository.GetAllAsync();
+            var allAvailabilites = await _availabilityRepository.GetAllAsync();
+            return allAvailabilites.OrderBy(a => a.DateTime).ToList();
         }
 
         /// <summary>

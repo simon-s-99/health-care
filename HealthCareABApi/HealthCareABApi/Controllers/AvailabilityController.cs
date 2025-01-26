@@ -111,5 +111,19 @@ namespace HealthCareABApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllAvailbilites()
+        {
+            try
+            {
+                var allAvailbilites = await _availabilityService.GetAllAvailabilitiesAsync();
+                return Ok(allAvailbilites);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
