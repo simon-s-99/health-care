@@ -239,6 +239,10 @@ namespace HealthCareABApi.Controllers
             if (!_userService.VerifyPassword(request.CurrentPassword, user.PasswordHash))
                 return BadRequest("Current password is incorrect");
 
+            // Prevent password reuse
+            if (_userService.VerifyPassword(request.NewPassword, user.PasswordHash))
+                return BadRequest("New password cannot be the same as the current password");
+
             if (request.NewPassword != request.ConfirmPassword)
                 return BadRequest("New password and confirmation password does not match");
 
