@@ -1,6 +1,7 @@
 ﻿using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
+using HealthCareABApi.Services.Interfaces;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Services.Implementations
@@ -32,38 +33,26 @@ namespace HealthCareABApi.Services.Implementations
                 throw new KeyNotFoundException("User not found.");
             }
 
-            foreach (DateTime timeSlot in dto.AvailableSlots)
+
+            if (dto.DateTime < DateTime.Now.ToUniversalTime())
             {
-                if (timeSlot < DateTime.Now)
-                {
-                    throw new ArithmeticException("Invalid date.");
-                }
+                throw new ArithmeticException("Invalid date.");
             }
 
-            var existingAvailbility = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, null);
+            var duplicateAvailability = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime);
 
-            if (existingAvailbility is not null) // If availability already exists for user, add the new availability's slot(s) to the existing slots
+            if (duplicateAvailability is not null)
             {
-                UpdateAvailabilityDTO updated = new UpdateAvailabilityDTO
-                {
-                    AvailableSlots = existingAvailbility.AvailableSlots.Concat(dto.AvailableSlots).ToList() // Add the slots to the existing slots
-                };
-
-                var availableSlotsWithoutDuplicates = updated.AvailableSlots.Distinct().ToList(); // Remove all duplicates
-                updated.AvailableSlots = availableSlotsWithoutDuplicates;
-
-                await UpdateAvailabilityByIdAsync(existingAvailbility.Id, updated);
+                throw new HttpRequestException("Availability already exists.");
             }
-            else
+
+            Availability availability = new Availability
             {
-                Availability availability = new Availability
-                {
-                    CaregiverId = dto.CaregiverId,
-                    AvailableSlots = dto.AvailableSlots,
-                };
+                CaregiverId = dto.CaregiverId,
+                DateTime = dto.DateTime,
+            };
 
-                await _availabilityRepository.CreateAsync(availability);
-            }
+            await _availabilityRepository.CreateAsync(availability);
         }
 
         /// <summary>
@@ -102,7 +91,8 @@ namespace HealthCareABApi.Services.Implementations
         /// <returns>A list of availabilites, or an empty list.</returns>
         public async Task<List<Availability>> GetAllAvailabilitiesAsync()
         {
-            return await _availabilityRepository.GetAllAsync();
+            var allAvailabilites = await _availabilityRepository.GetAllAsync();
+            return allAvailabilites.OrderBy(a => a.DateTime).ToList();
         }
 
         /// <summary>
@@ -118,12 +108,9 @@ namespace HealthCareABApi.Services.Implementations
 
             foreach (var availability in allAvailabilities)
             {
-                foreach (var slot in availability.AvailableSlots)
+                if (availability.DateTime.ToString().Split(" ")[0] == date.ToString().Split(" ")[0]) // Compare only the date part of the DateTime
                 {
-                    if (slot.ToString().Split(" ")[0] == date.ToString().Split(" ")[0]) // Compare only the date part of the DateTime
-                    {
-                        result.Add(availability);
-                    }
+                    result.Add(availability);
                 }
             }
             return result;
@@ -154,13 +141,11 @@ namespace HealthCareABApi.Services.Implementations
 
             var availability = await GetAvailabilityByIdAsync(id) ?? throw new KeyNotFoundException("Availability not found.");
 
-            var dtoWithoutDuplicates = dto.AvailableSlots.Distinct().ToList();
-
             // Get availability by id
             var filter = Builders<Availability>.Filter.Eq(a => a.Id, id);
 
             // Define update to be made
-            var update = Builders<Availability>.Update.Set("AvailableSlots", dtoWithoutDuplicates);
+            var update = Builders<Availability>.Update.Set("DateTime", dto.DateTime);
 
             await _availabilityRepository.UpdateAsync(filter, update);
         }
