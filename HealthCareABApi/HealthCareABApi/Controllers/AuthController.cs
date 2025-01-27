@@ -130,7 +130,11 @@ namespace HealthCareABApi.Controllers
             }
 
             // Validate email
-            if (!string.IsNullOrWhiteSpace(request.Email))
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                errors.Add("Email is required.");
+            }
+            else
             {
                 if (!ValidationHelper.IsValidEmail(request.Email))
                 {
@@ -167,7 +171,11 @@ namespace HealthCareABApi.Controllers
             }
 
             // Validate phone number
-            if (!string.IsNullOrWhiteSpace(request.Phonenumber))
+            if (string.IsNullOrWhiteSpace(request.Phonenumber))
+            {
+                errors.Add("Phone number is required.");
+            }
+            else
             {
                 if (!ValidationHelper.IsValidPhoneNumber(request.Phonenumber))
                 {
