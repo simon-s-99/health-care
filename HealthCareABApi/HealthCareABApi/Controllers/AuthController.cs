@@ -69,6 +69,35 @@ namespace HealthCareABApi.Controllers
             return Ok(regResponse);
         }
 
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            // Retrieve the user ID from JWT claims
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User is not authenticated");
+
+            // Fetch the user from the database
+            var user = await _userService.GetUserByIdAsync(userId);
+
+            if (user == null)
+                return NotFound("User not found");
+
+            // Return the user's profile information
+            return Ok(new
+            {
+                user.Firstname,
+                user.Lastname,
+                user.Email,
+                user.Phonenumber,
+                user.Username
+            });
+        }
+
+
         [Authorize]
         [HttpPatch("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateDTO request)
