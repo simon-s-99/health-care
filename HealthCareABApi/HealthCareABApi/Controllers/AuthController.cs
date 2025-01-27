@@ -97,7 +97,6 @@ namespace HealthCareABApi.Controllers
             });
         }
 
-
         [Authorize]
         [HttpPatch("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateDTO request)
@@ -105,44 +104,96 @@ namespace HealthCareABApi.Controllers
             // Retrieve the user ID from JWT claims
             var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrEmpty(userId)) return Unauthorized("User is not authenticated");
-
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User is not authenticated");
 
             // Fetch the user from the database
             var user = await _userService.GetUserByIdAsync(userId);
-            if (user == null) return NotFound("User not found");
+            if (user == null)
+                return NotFound("User not found");
 
-            // Update firstname
-            if (!string.IsNullOrEmpty(request.Firstname))
-                user.Firstname = request.Firstname;
+            // Validate and update fields
+            var errors = new List<string>();
 
-            // Update lastname
-            if (!string.IsNullOrEmpty(request.LastName))
-                user.Lastname = request.LastName;
-
-            // Email update
-            if (!string.IsNullOrEmpty(request.Email))
+            // Validate username
+            if (string.IsNullOrWhiteSpace(request.Username))
             {
-                if (!ValidationHelper.IsValidEmail(request.Email)) return BadRequest("Invalid email format");
-
-                if (await _userService.ExistsByEmailAsync(request.Email) && request.Email != user.Email)
-                    return Conflict("Email is already in use");
-
-                user.Email = request.Email;
+                errors.Add("Username is required.");
+            }
+            else if (await _userService.ExistsByUsernameAsync(request.Username) && request.Username != user.Username)
+            {
+                errors.Add("Username is already in use.");
+            }
+            else
+            {
+                user.Username = request.Username;
             }
 
-            // Phone number
-            if (!string.IsNullOrEmpty(request.Phonenumber))
+            // Validate email
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                if (!ValidationHelper.IsValidEmail(request.Email))
+                {
+                    errors.Add("Invalid email format.");
+                }
+                else if (await _userService.ExistsByEmailAsync(request.Email) && request.Email != user.Email)
+                {
+                    errors.Add("Email is already in use.");
+                }
+                else
+                {
+                    user.Email = request.Email;
+                }
+            }
+
+            // Validate firstname
+            if (string.IsNullOrWhiteSpace(request.Firstname))
+            {
+                errors.Add("First name is required.");
+            }
+            else
+            {
+                user.Firstname = request.Firstname;
+            }
+
+            // Validate lastname
+            if (string.IsNullOrWhiteSpace(request.LastName))
+            {
+                errors.Add("Last name is required.");
+            }
+            else
+            {
+                user.Lastname = request.LastName;
+            }
+
+            // Validate phone number
+            if (!string.IsNullOrWhiteSpace(request.Phonenumber))
             {
                 if (!ValidationHelper.IsValidPhoneNumber(request.Phonenumber))
-                    return BadRequest("Invalid phone number format");
-
-                if (await _userService.ExistsByPhoneNumberAsync(request.Phonenumber) && request.Phonenumber != user.Phonenumber)
-                    return Conflict("Phone number is already in use");
-
-                user.Phonenumber = request.Phonenumber;
+                {
+                    errors.Add("Invalid phone number format.");
+                }
+                else if (await _userService.ExistsByPhoneNumberAsync(request.Phonenumber) && request.Phonenumber != user.Phonenumber)
+                {
+                    errors.Add("Phone number is already in use.");
+                }
+                else
+                {
+                    user.Phonenumber = request.Phonenumber;
+                }
             }
 
+            // If there are validation errors, return them
+            if (errors.Any())
+            {
+                return BadRequest(new
+                {
+                    message = "Validation failed",
+                    errors
+                });
+            }
+
+            // Save updated user data
             await _userService.UpdateUserAsync(user);
 
             return Ok(new
@@ -153,13 +204,13 @@ namespace HealthCareABApi.Controllers
                     user.Firstname,
                     user.Lastname,
                     user.Email,
-                    user.Phonenumber
+                    user.Phonenumber,
+                    user.Username
                 }
             });
-
-
-
         }
+
+
 
         [Authorize]
         [HttpPost("change-password")]
@@ -181,7 +232,7 @@ namespace HealthCareABApi.Controllers
                 return BadRequest("Current password is incorrect");
 
             if (request.NewPassword != request.ConfirmPassword)
-                return BadRequest("New password and confirmation password do not match");
+                return BadRequest("New password and confirmation password does not match");
 
             if (request.NewPassword.Length < 8 || !ValidationHelper.HasComplexity(request.NewPassword))
                 return BadRequest("New password must be at least 8 characters and contain a mix of uppercase, lowercase, numbers, and special characters");
