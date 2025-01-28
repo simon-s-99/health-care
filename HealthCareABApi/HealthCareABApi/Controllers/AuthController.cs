@@ -101,7 +101,7 @@ namespace HealthCareABApi.Controllers
                 // Prepare a response without the JWT token, including only user details and roles.
                 var authResponse = new
                 {
-                    message = "Login successful",
+                    message = "Authenticated",
                     username = user.Username,
                     roles = user.Roles,
                     userId = user.Id
