@@ -4,6 +4,8 @@ using HealthCareABApi.DTO;
 using HealthCareABApi.Services.Interfaces;  
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 
 namespace HealthCareABApiTests.Controllers
 {
@@ -70,6 +72,92 @@ namespace HealthCareABApiTests.Controllers
             Assert.Equal(registerDto.Roles, response.Roles);
 
             mockUserService.Verify(s => s.CreateUserAsync(It.IsAny<User>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Login_ReturnsOk_WhenCredentialsAreValid()
+        {
+            // Arrange
+            var mockUserService = new Mock<IUserService>();
+            var mockJwtTokenService = new Mock<IJwtTokenService>();
+            var controller = new AuthController(mockUserService.Object, mockJwtTokenService.Object);
+
+            var loginDto = new LoginDTO
+            {
+                Username = "validUser",
+                Password = "validPassword123"
+            };
+
+            var user = new User
+            {
+                Id = ObjectId.GenerateNewId().ToString(),
+                Firstname = "Walter",
+                Lastname = "White",
+                Email = "walter@mail.com",
+                Phonenumber = "123456789",
+                Username = "validUser",
+                PasswordHash = "hashedValidPassword123",
+                Roles = new List<string> { "User" }
+            };
+
+            mockUserService.Setup(s => s.GetUserByUsernameAsync(loginDto.Username))
+                           .ReturnsAsync(user);
+
+            mockUserService.Setup(s => s.VerifyPassword(loginDto.Password, user.PasswordHash))
+                           .Returns(true);
+
+            mockJwtTokenService.Setup(s => s.GenerateToken(user))
+                               .Returns("mockJwtToken");
+
+            var controllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+
+            controller.ControllerContext = controllerContext;
+
+            // Act
+            var result = await controller.Login(loginDto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<LoginResponseDTO>(okResult.Value);
+
+            Assert.Equal("Login successful", response.Message);
+            Assert.Equal(user.Username, response.Username);
+            Assert.Equal(user.Roles, response.Roles);
+            Assert.Equal(user.Id, response.UserId);
+
+            mockJwtTokenService.Verify(s => s.GenerateToken(It.Is<User>(u => u.Id == user.Id)), Times.Once);
+        }
+
+        [Fact]
+        public async Task Login_ReturnsUnauthorized_WhenCredentialsAreInvalid()
+        {
+            // Arrange
+            var mockUserService = new Mock<IUserService>();
+            var mockJwtTokenService = new Mock<IJwtTokenService>();
+            var controller = new AuthController(mockUserService.Object, mockJwtTokenService.Object);
+
+            var loginDto = new LoginDTO
+            {
+                Username = "invalidUser",
+                Password = "wrongPassword"
+            };
+
+            // Simulate user not found or incorrect password
+            mockUserService.Setup(s => s.GetUserByUsernameAsync(loginDto.Username))
+                           .ReturnsAsync((User)null);  // User does not exist
+
+            // Act
+            var result = await controller.Login(loginDto);
+
+            // Assert
+            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            Assert.Equal("Incorrect username or password", unauthorizedResult.Value);
+
+            // Verify that no token was generated
+            mockJwtTokenService.Verify(s => s.GenerateToken(It.IsAny<User>()), Times.Never);
         }
     }
 }

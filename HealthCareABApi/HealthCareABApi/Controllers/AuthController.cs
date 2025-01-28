@@ -101,12 +101,12 @@ namespace HealthCareABApi.Controllers
                 HttpContext.Response.Cookies.Append("jwt", token, cookieOptions);
 
                 // Prepare a response without the JWT token, including only user details and roles.
-                var authResponse = new
+                var authResponse = new LoginResponseDTO
                 {
-                    message = "Login successful",
-                    username = user.Username,
-                    roles = user.Roles,
-                    userId = user.Id
+                    Message = "Login successful",
+                    Username = user.Username,
+                    Roles = user.Roles,
+                    UserId = user.Id
                 };
 
                 return Ok(authResponse);
