@@ -9,9 +9,9 @@ namespace HealthCareABApi.Services.Implementations
     public class AvailabilityService : IAvailabilityService
     {
         private readonly IAvailabilityRepository _availabilityRepository;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public AvailabilityService(IAvailabilityRepository availabilityRepository, UserService userService)
+        public AvailabilityService(IAvailabilityRepository availabilityRepository, IUserService userService)
         {
             _availabilityRepository = availabilityRepository;
             _userService = userService;
