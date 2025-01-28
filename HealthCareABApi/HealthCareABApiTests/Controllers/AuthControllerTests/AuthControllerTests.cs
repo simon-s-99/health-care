@@ -147,7 +147,7 @@ namespace HealthCareABApiTests.Controllers
 
             // Simulate user not found or incorrect password
             mockUserService.Setup(s => s.GetUserByUsernameAsync(loginDto.Username))
-                           .ReturnsAsync((User)null);  // User does not exist
+                           .ReturnsAsync((User)null);  
 
             // Act
             var result = await controller.Login(loginDto);
