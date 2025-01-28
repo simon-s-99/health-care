@@ -159,7 +159,10 @@ builder.Services.AddCors(options =>
         // Specify the allowed origins for this policy.
         // Only requests coming from "http://localhost:5173" will be allowed.
         // You can add more origins here if needed.
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins([
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://localhost:3000",])
               // Allow any HTTP method (e.g., GET, POST, PUT, DELETE) for cross-origin requests.
               .AllowAnyMethod()
               // Allow any HTTP header in the requests (e.g., Content-Type, Authorization).
