@@ -39,7 +39,14 @@ namespace HealthCareABApi.Services.Implementations
                 throw new ArithmeticException("Invalid date.");
             }
 
-            var duplicateAvailability = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime);
+            var caregiver = await _userService.GetUserByIdAsync(dto.CaregiverId);
+
+            if (!caregiver.Roles.Contains("Admin"))
+            {
+                throw new KeyNotFoundException("User is not the correct role.");
+            }
+
+                var duplicateAvailability = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime);
 
             if (duplicateAvailability is not null)
             {

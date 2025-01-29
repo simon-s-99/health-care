@@ -35,7 +35,23 @@ namespace HealthCareABApi.Services.Implementations
                 throw new KeyNotFoundException("User(s) not found.");
             }
 
+            var caregiver = await _userService.GetUserByIdAsync(dto.CaregiverId);
+            var patient = await _userService.GetUserByIdAsync(dto.PatientId);
+
+            if (!caregiver.Roles.Contains("Admin") || !patient.Roles.Contains("User"))
+            {
+                throw new KeyNotFoundException("User(s) are not the correct role.");
+            }
+
             var availability = await _availabilityService.GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime) ?? throw new BadHttpRequestException("Caregiver is not available.");
+
+            var existingBookingForCaregiver = await _appointmentRepository.GetAllByCaregiverId(dto.CaregiverId, dto.DateTime);
+            var existingBookingForPatient = await _appointmentRepository.GetAllByPatientId(dto.PatientId, dto.DateTime);
+
+            if (existingBookingForCaregiver.Count > 0 || existingBookingForPatient.Count > 0)
+            {
+                throw new BadHttpRequestException("Booking already exists.");
+            }
 
             Appointment appointment = new Appointment
             {
