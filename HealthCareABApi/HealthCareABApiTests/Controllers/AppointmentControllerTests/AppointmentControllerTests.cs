@@ -15,8 +15,9 @@ namespace HealthCareABApiTests.Controllers
         public async Task CreateAppointment_ReturnsCreatedResult_WhenDTOIsValid()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+            var mockAppointmentAvailabilityService = new Mock<IAppointmentAvailabilityService>();
+            var controller = new AppointmentController(mockAppointmentService.Object, mockAppointmentAvailabilityService.Object);
 
 
             // Mock the logged in user/patient
@@ -38,7 +39,7 @@ namespace HealthCareABApiTests.Controllers
                 Status = AppointmentStatus.Scheduled
             };
 
-            mockService.Setup(svc => svc.CreateAppointmentAsync(dto)).Returns(Task.CompletedTask);
+            mockAppointmentService.Setup(svc => svc.CreateAppointmentAsync(dto)).Returns(Task.CompletedTask);
 
             // Act
             var result = await controller.CreateAppointment(dto);
@@ -46,15 +47,16 @@ namespace HealthCareABApiTests.Controllers
             // Assert
             var createdResult = Assert.IsType<StatusCodeResult>(result);
             Assert.Equal(201, createdResult.StatusCode);
-            mockService.Verify(svc => svc.CreateAppointmentAsync(dto), Times.Once);
+            mockAppointmentService.Verify(svc => svc.CreateAppointmentAsync(dto), Times.Once);
         }
 
         [Fact]
         public async Task CreateAppointment_ReturnsBadRequestResult_WhenDTOIsIncomplete()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+            var mockAppointmentAvailabilityService = new Mock<IAppointmentAvailabilityService>();
+            var controller = new AppointmentController(mockAppointmentService.Object, mockAppointmentAvailabilityService.Object);
 
             // CaregiverID missing
             CreateAppointmentDTO dto = new CreateAppointmentDTO
@@ -79,8 +81,9 @@ namespace HealthCareABApiTests.Controllers
         public async Task GetAppointmentById_ReturnsOk_WhenAppointmentExistsAndUserIsAuthorized()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+            var mockAppointmentAvailabilityService = new Mock<IAppointmentAvailabilityService>();
+            var controller = new AppointmentController(mockAppointmentService.Object, mockAppointmentAvailabilityService.Object);
 
             var appointmentId = "678523516caf0d38580eb536";
             var userId = "678523516caf0d38580eb537";
@@ -93,7 +96,7 @@ namespace HealthCareABApiTests.Controllers
                 Status = AppointmentStatus.Scheduled
             };
 
-            mockService
+            mockAppointmentService
                 .Setup(svc => svc.GetAppointmentByIdAsync(appointmentId))
                 .ReturnsAsync(appointment);
 
@@ -119,12 +122,13 @@ namespace HealthCareABApiTests.Controllers
         public async Task GetAppointmentById_ReturnsNotFound_WhenAppointmentDoesNotExist()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+            var mockAppointmentAvailabilityService = new Mock<IAppointmentAvailabilityService>();
+            var controller = new AppointmentController(mockAppointmentService.Object, mockAppointmentAvailabilityService.Object);
 
             var appointmentId = "nonexistentId";
 
-            mockService
+            mockAppointmentService
                 .Setup(svc => svc.GetAppointmentByIdAsync(appointmentId))
                 .ReturnsAsync((Appointment)null);
 
@@ -141,8 +145,9 @@ namespace HealthCareABApiTests.Controllers
         public async Task GetAppointmentById_ReturnsForbid_WhenUserIsUnauthorized()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+            var mockAppointmentAvailabilityService = new Mock<IAppointmentAvailabilityService>();
+            var controller = new AppointmentController(mockAppointmentService.Object, mockAppointmentAvailabilityService.Object);
 
             var appointmentId = "678523516caf0d38580eb536";
             var userId = "678523516caf0d38580eb537";
@@ -155,7 +160,7 @@ namespace HealthCareABApiTests.Controllers
                 Status = AppointmentStatus.Scheduled
             };
 
-            mockService
+            mockAppointmentService
                 .Setup(svc => svc.GetAppointmentByIdAsync(appointmentId))
                 .ReturnsAsync(appointment);
 
@@ -179,8 +184,9 @@ namespace HealthCareABApiTests.Controllers
         public async Task GetAllAppointmentsByUserIdAsync_ReturnsFilteredAppointmentsByDate()
         {
             // Arrange
-            var mockService = new Mock<IAppointmentService>();
-            var controller = new AppointmentController(mockService.Object);
+            var mockAppointmentService = new Mock<IAppointmentService>();
+            var mockAppointmentAvailabilityService = new Mock<IAppointmentAvailabilityService>();
+            var controller = new AppointmentController(mockAppointmentService.Object, mockAppointmentAvailabilityService.Object);
 
             var userId = "678523516caf0d38580eb537";
             var filterDate = DateTime.Now.Date;
@@ -205,7 +211,7 @@ namespace HealthCareABApiTests.Controllers
         }
         };
 
-            mockService.Setup(svc => svc.GetAllAppointmentsByUserIdAsync(userId, filterDate, true))
+            mockAppointmentAvailabilityService.Setup(svc => svc.GetAllAppointmentsByUserIdAsync(userId, filterDate, true))
                        .ReturnsAsync(appointments.Where(a => a.DateTime.Date == filterDate).ToList());
 
             // Act
