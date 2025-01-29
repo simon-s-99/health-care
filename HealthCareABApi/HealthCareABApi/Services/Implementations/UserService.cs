@@ -1,12 +1,13 @@
 ﻿using HealthCareABApi.Configurations;
 using HealthCareABApi.Models;
+using HealthCareABApi.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Services.Implementations
 {
 
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IMongoCollection<User> _users;
 

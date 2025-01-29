@@ -2,6 +2,7 @@
 using HealthCareABApi.DTO;
 using HealthCareABApi.Models;
 using HealthCareABApi.Services.Implementations;
+using HealthCareABApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,10 @@ namespace HealthCareABApi.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserService _userService;
-        private readonly JwtTokenService _jwtTokenService;
+        private readonly IUserService _userService;
+        private readonly IJwtTokenService _jwtTokenService;
 
-        public AuthController(UserService userService, JwtTokenService jwtTokenService)
+        public AuthController(IUserService userService, IJwtTokenService jwtTokenService)
         {
             _userService = userService;
             _jwtTokenService = jwtTokenService;
@@ -30,6 +31,7 @@ namespace HealthCareABApi.Controllers
             {
                 return Conflict("Username is already taken");
             }
+
             // Check if email already exist
             if (await _userService.ExistsByEmailAsync(request.Email))
             {
@@ -59,11 +61,11 @@ namespace HealthCareABApi.Controllers
             await _userService.CreateUserAsync(user);
 
             // Prepare response with username and roles
-            var regResponse = new
+            var regResponse = new RegisterResponseDTO
             {
-                message = "User registered successfully",
-                username = user.Username,
-                roles = user.Roles
+                Message = "User registered successfully",
+                Username = user.Username,
+                Roles = user.Roles
             };
 
             return Ok(regResponse);
@@ -288,12 +290,12 @@ namespace HealthCareABApi.Controllers
                 HttpContext.Response.Cookies.Append("jwt", token, cookieOptions);
 
                 // Prepare a response without the JWT token, including only user details and roles.
-                var authResponse = new
+                var authResponse = new LoginResponseDTO
                 {
-                    message = "Login successful",
-                    username = user.Username,
-                    roles = user.Roles,
-                    userId = user.Id
+                    Message = "Login successful",
+                    Username = user.Username,
+                    Roles = user.Roles,
+                    UserId = user.Id
                 };
 
                 return Ok(authResponse);

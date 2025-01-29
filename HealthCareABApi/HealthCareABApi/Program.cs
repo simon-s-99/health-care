@@ -47,8 +47,8 @@ builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 // Register custom services
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 // this vv might cause problems since we have an empty constructor present in EmailService
 // TODO - verify that the DI is working correctly here
 builder.Services.AddScoped<HealthCareABApi.Services.Implementations.EmailService>();

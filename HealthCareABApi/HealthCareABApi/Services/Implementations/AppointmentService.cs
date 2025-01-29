@@ -10,9 +10,9 @@ namespace HealthCareABApi.Services.Implementations
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IAvailabilityService _availabilityService;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, IAvailabilityService availabilityService, UserService userService)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IAvailabilityService availabilityService, IUserService userService)
         {
             _appointmentRepository = appointmentRepository;
             _availabilityService = availabilityService;
