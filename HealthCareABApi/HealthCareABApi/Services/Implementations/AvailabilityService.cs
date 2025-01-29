@@ -3,6 +3,7 @@ using HealthCareABApi.Models;
 using HealthCareABApi.Repositories.Interfaces;
 using HealthCareABApi.Services.Interfaces;
 using MongoDB.Driver;
+using System.Runtime.InteropServices;
 
 namespace HealthCareABApi.Services.Implementations
 {
@@ -10,11 +11,13 @@ namespace HealthCareABApi.Services.Implementations
     {
         private readonly IAvailabilityRepository _availabilityRepository;
         private readonly IUserService _userService;
+        private readonly IAppointmentAvailabilityService _appointmentAvailabilityService;
 
-        public AvailabilityService(IAvailabilityRepository availabilityRepository, IUserService userService)
+        public AvailabilityService(IAvailabilityRepository availabilityRepository, IUserService userService, IAppointmentAvailabilityService appointmentAvailabilityService)
         {
             _availabilityRepository = availabilityRepository;
             _userService = userService;
+            _appointmentAvailabilityService = appointmentAvailabilityService;
         }
 
         /// <summary>
@@ -33,7 +36,6 @@ namespace HealthCareABApi.Services.Implementations
                 throw new KeyNotFoundException("User not found.");
             }
 
-
             if (dto.DateTime < DateTime.Now.ToUniversalTime())
             {
                 throw new ArithmeticException("Invalid date.");
@@ -46,11 +48,18 @@ namespace HealthCareABApi.Services.Implementations
                 throw new KeyNotFoundException("User is not the correct role.");
             }
 
-                var duplicateAvailability = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime);
+            var duplicateAvailability = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime);
 
             if (duplicateAvailability is not null)
             {
                 throw new HttpRequestException("Availability already exists.");
+            }
+
+            var overlappingBooking = await _appointmentAvailabilityService.GetAllAppointmentsByUserIdAsync(dto.CaregiverId, dto.DateTime, false);
+
+            if (overlappingBooking.Count > 0)
+            {
+                throw new HttpRequestException("There is another booking at the same time scheduled. Please choose another caregiver.");
             }
 
             Availability availability = new Availability

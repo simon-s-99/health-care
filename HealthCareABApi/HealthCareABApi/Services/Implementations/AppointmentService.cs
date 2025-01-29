@@ -68,29 +68,6 @@ namespace HealthCareABApi.Services.Implementations
         }   
 
         /// <summary>
-        /// Get all upcoming and previous appointments for a specific user.
-        /// </summary>
-        /// <param name="id">The user's id.</param>
-        /// <param name="date">(Optional) Get appointments for a specific date only.</param>
-        /// <param name="isPatient">Whether to search for the patientId or caregiverId.</param>
-        /// <returns>A list of appointments, or an empty list.</returns>
-        public async Task<List<Appointment>> GetAllAppointmentsByUserIdAsync(string id, DateTime? date, bool isPatient)
-        {
-            var appointments = new List<Appointment>();
-
-            if (isPatient)
-            {
-                appointments = await _appointmentRepository.GetAllByPatientId(id, date ?? null);
-            } 
-            else
-            {
-                appointments = await _appointmentRepository.GetAllByCaregiverId(id, date ?? null);
-            }
-
-            return appointments.OrderBy(a => a.DateTime).ToList(); //Returns empty array if user is valid but no appointments are found
-        }
-
-        /// <summary>
         /// Get an appointment by its id.
         /// </summary>
         /// <param name="id">The id of the appointment.</param>
