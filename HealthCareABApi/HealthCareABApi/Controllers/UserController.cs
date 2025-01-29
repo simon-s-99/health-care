@@ -1,35 +1,52 @@
 ﻿using HealthCareABApi.DTO;
+using HealthCareABApi.Models;
 using HealthCareABApi.Services.Implementations;
+using HealthCareABApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareABApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UserController(UserService userService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserById([FromQuery] string id)
+        public async Task<IActionResult> GetCaregiverById([FromQuery] string id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-
-            GetUserDTO dto = new GetUserDTO
+            try
             {
-                Firstname = user.Firstname,
-                Lastname = user.Lastname,
-                Email = user.Email,
-                Phonenumber = user.Phonenumber,
-                Username = user.Username,
-                Roles = user.Roles
-            };
-            return Ok(dto);
+                var user = await _userService.GetUserByIdAsync(id);
+
+                if (!user.Roles.Contains("Admin")) // Only allow caregivers to be queried
+                { 
+                    return Forbid();
+                }
+
+                GetUserDTO dto = new GetUserDTO
+                {
+                    Firstname = user.Firstname,
+                    Lastname = user.Lastname,
+                    Email = user.Email,
+                    Phonenumber = user.Phonenumber,
+                    Username = user.Username,
+                    Roles = user.Roles
+                };
+                return Ok(dto);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
