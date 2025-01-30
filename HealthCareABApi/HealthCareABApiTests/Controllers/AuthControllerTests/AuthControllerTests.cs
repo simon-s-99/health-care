@@ -26,7 +26,7 @@ namespace HealthCareABApiTests.Controllers
                 Username = "existingUser",
                 Email = "test@example.com",
                 Phonenumber = "1234567890",
-                Password = "password123",
+                Password = "Valid@123",
                 Roles = new List<string> { "User" }
             };
 
@@ -56,7 +56,7 @@ namespace HealthCareABApiTests.Controllers
                 Username = "newUser",
                 Email = "jesse@example.com",
                 Phonenumber = "9876543210",
-                Password = "securePassword123",
+                Password = "Strong@123",
                 Roles = new List<string> { "Admin" }
             };
 
