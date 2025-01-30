@@ -1,12 +1,13 @@
 ﻿using HealthCareABApi.Configurations;
 using HealthCareABApi.Models;
+using HealthCareABApi.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace HealthCareABApi.Services.Implementations
 {
 
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IMongoCollection<User> _users;
 
@@ -51,6 +52,29 @@ namespace HealthCareABApi.Services.Implementations
         {
             await _users.InsertOneAsync(user);
         }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            // The "filter" identifies which document in the "Users" collection to update.
+            // It uses Builders<User>.Filter to match the user's Id
+
+            var filter = Builders<User>.Filter.Eq(u => u.Id, user.Id);
+            var update = Builders<User>.Update
+                .Set(u => u.Firstname, user.Firstname)
+                .Set(u => u.Lastname, user.Lastname)
+                .Set(u => u.Email, user.Email)
+                .Set(u => u.Phonenumber, user.Phonenumber)
+                .Set(u => u.Username, user.Username)
+                .Set(u => u.PasswordHash, user.PasswordHash);
+
+            var result = await _users.UpdateOneAsync(filter, update);
+
+            if (result.MatchedCount == 0)
+            {
+                throw new Exception("User not found");
+            }
+        }
+
 
         // Method to hash a plaintext password using BCrypt.
         public string HashPassword(string password)

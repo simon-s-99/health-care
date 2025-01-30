@@ -9,9 +9,9 @@ namespace HealthCareABApi.Services.Implementations
     public class AvailabilityService : IAvailabilityService
     {
         private readonly IAvailabilityRepository _availabilityRepository;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public AvailabilityService(IAvailabilityRepository availabilityRepository, UserService userService)
+        public AvailabilityService(IAvailabilityRepository availabilityRepository, IUserService userService)
         {
             _availabilityRepository = availabilityRepository;
             _userService = userService;
@@ -39,6 +39,12 @@ namespace HealthCareABApi.Services.Implementations
                 throw new ArithmeticException("Invalid date.");
             }
 
+            var duplicateAvailability = await GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime);
+
+            if (duplicateAvailability is not null)
+            {
+                throw new HttpRequestException("Availability already exists.");
+            }
 
             Availability availability = new Availability
             {
@@ -85,7 +91,8 @@ namespace HealthCareABApi.Services.Implementations
         /// <returns>A list of availabilites, or an empty list.</returns>
         public async Task<List<Availability>> GetAllAvailabilitiesAsync()
         {
-            return await _availabilityRepository.GetAllAsync();
+            var allAvailabilites = await _availabilityRepository.GetAllAsync();
+            return allAvailabilites.OrderBy(a => a.DateTime).ToList();
         }
 
         /// <summary>
