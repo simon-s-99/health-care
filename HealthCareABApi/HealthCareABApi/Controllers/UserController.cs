@@ -26,11 +26,6 @@ namespace HealthCareABApi.Controllers
             {
                 var user = await _userService.GetUserByIdAsync(id);
 
-                if (!user.Roles.Contains("Admin")) // Only allow caregivers to be queried
-                { 
-                    return Forbid();
-                }
-
                 GetUserDTO dto = new GetUserDTO
                 {
                     Firstname = user.Firstname,
