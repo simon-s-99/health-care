@@ -20,7 +20,7 @@ namespace HealthCareABApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCaregiverById([FromQuery] string id)
+        public async Task<IActionResult> GetUserById([FromQuery] string id)
         {
             try
             {
