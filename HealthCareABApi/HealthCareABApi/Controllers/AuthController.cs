@@ -26,6 +26,12 @@ namespace HealthCareABApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO request)
         {
+            // Validate password length and complexity
+            if (request.Password.Length < 8 || !ValidationHelper.HasComplexity(request.Password))
+            {
+                return BadRequest("Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character.");
+            }
+
             // Check if username already exists
             if (await _userService.ExistsByUsernameAsync(request.Username))
             {
