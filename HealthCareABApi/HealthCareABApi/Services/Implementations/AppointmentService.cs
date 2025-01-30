@@ -35,7 +35,23 @@ namespace HealthCareABApi.Services.Implementations
                 throw new KeyNotFoundException("User(s) not found.");
             }
 
+            var caregiver = await _userService.GetUserByIdAsync(dto.CaregiverId);
+            var patient = await _userService.GetUserByIdAsync(dto.PatientId);
+
+            if (!caregiver.Roles.Contains("Admin") || !patient.Roles.Contains("User"))
+            {
+                throw new KeyNotFoundException("User(s) are not the correct role.");
+            }
+
             var availability = await _availabilityService.GetAvailabilityByCaregiverIdAsync(dto.CaregiverId, dto.DateTime) ?? throw new BadHttpRequestException("Caregiver is not available.");
+
+            var existingBookingForCaregiver = await _appointmentRepository.GetAllByCaregiverId(dto.CaregiverId, dto.DateTime);
+            var existingBookingForPatient = await _appointmentRepository.GetAllByPatientId(dto.PatientId, dto.DateTime);
+
+            if (existingBookingForCaregiver.Count > 0 || existingBookingForPatient.Count > 0)
+            {
+                throw new BadHttpRequestException("Booking already exists.");
+            }
 
             Appointment appointment = new Appointment
             {
@@ -50,29 +66,6 @@ namespace HealthCareABApi.Services.Implementations
             // Delete availability
             await _availabilityService.DeleteAvailabilityByIdAsync(availability.Id);
         }   
-
-        /// <summary>
-        /// Get all upcoming and previous appointments for a specific user.
-        /// </summary>
-        /// <param name="id">The user's id.</param>
-        /// <param name="date">(Optional) Get appointments for a specific date only.</param>
-        /// <param name="isPatient">Whether to search for the patientId or caregiverId.</param>
-        /// <returns>A list of appointments, or an empty list.</returns>
-        public async Task<List<Appointment>> GetAllAppointmentsByUserIdAsync(string id, DateTime? date, bool isPatient)
-        {
-            var appointments = new List<Appointment>();
-
-            if (isPatient)
-            {
-                appointments = await _appointmentRepository.GetAllByPatientId(id, date ?? null);
-            } 
-            else
-            {
-                appointments = await _appointmentRepository.GetAllByCaregiverId(id, date ?? null);
-            }
-
-            return appointments.OrderBy(a => a.DateTime).ToList(); //Returns empty array if user is valid but no appointments are found
-        }
 
         /// <summary>
         /// Get an appointment by its id.

@@ -15,10 +15,12 @@ namespace HealthCareABApi.Controllers
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
+        private readonly IAppointmentAvailabilityService _appointmentAvailabilityService;
 
-        public AppointmentController(IAppointmentService appointmentService)
+        public AppointmentController(IAppointmentService appointmentService, IAppointmentAvailabilityService appointmentAvailabilityService)
         {
             _appointmentService = appointmentService;
+            _appointmentAvailabilityService = appointmentAvailabilityService;
         }
 
         [HttpPost]
@@ -97,9 +99,6 @@ namespace HealthCareABApi.Controllers
             }
         }
 
-
-
-
         /// <summary>
         /// Retrieves appointments for a specific user, optionally filtered by role and date.
         /// </summary>
@@ -117,7 +116,7 @@ namespace HealthCareABApi.Controllers
 
             try
             {
-                var appointments = await _appointmentService.GetAllAppointmentsByUserIdAsync(id, date, isPatient);
+                var appointments = await _appointmentAvailabilityService.GetAllAppointmentsByUserIdAsync(id, date, isPatient);
                 return Ok(appointments);
             }
             catch (Exception ex)
