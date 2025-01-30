@@ -52,6 +52,11 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 // this vv might cause problems since we have an empty constructor present in EmailService
 // TODO - verify that the DI is working correctly here
 builder.Services.AddScoped<HealthCareABApi.Services.Implementations.EmailService>();
+
+// Add shared service
+builder.Services.AddScoped<IAppointmentAvailabilityService, AppointmentAvailabilityService>();
+
+// Add other services
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 

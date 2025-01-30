@@ -312,7 +312,6 @@ namespace HealthCareABApi.Controllers
             }
         }
 
-
         [HttpPost("logout")]
         public IActionResult Logout()
         {
